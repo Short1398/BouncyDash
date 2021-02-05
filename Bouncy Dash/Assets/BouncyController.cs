@@ -32,6 +32,7 @@ public class BouncyController : MonoBehaviour
 
     ActiveSensors m_sensors;
     float m_sensorLength = 0.75f;
+    float m_rbVelocityPercetange = 0.15f;
 
     //Layers or axis
     const string OBSTACLE = "Obstacle";
@@ -135,34 +136,34 @@ public class BouncyController : MonoBehaviour
     //}
     private void SetSensors()
     {
-        m_sensors.USensor = Physics2D.Raycast(transform.position, transform.up, m_sensorLength, LayerMask.GetMask(OBSTACLE));
-        m_sensors.URSensor = Physics2D.Raycast(transform.position, (transform.up + transform.right).normalized, m_sensorLength, LayerMask.GetMask(OBSTACLE));
-        m_sensors.RSensor = Physics2D.Raycast(transform.position, transform.right, m_sensorLength, LayerMask.GetMask(OBSTACLE));
-        m_sensors.RDSensor = Physics2D.Raycast(transform.position, (-transform.up + transform.right).normalized, m_sensorLength, LayerMask.GetMask(OBSTACLE));
-        m_sensors.DSensor = Physics2D.Raycast(transform.position, -transform.up, m_sensorLength, LayerMask.GetMask(OBSTACLE));
-        m_sensors.DLSensor = Physics2D.Raycast(transform.position, (-transform.up + -transform.right).normalized, m_sensorLength, LayerMask.GetMask(OBSTACLE));
-        m_sensors.LSensor = Physics2D.Raycast(transform.position, -transform.right, m_sensorLength, LayerMask.GetMask(OBSTACLE));
-        m_sensors.LUSensor = Physics2D.Raycast(transform.position, (transform.up + -transform.right).normalized, m_sensorLength, LayerMask.GetMask(OBSTACLE));
-
-        //m_sensors.USensor = Physics2D.Raycast(transform.position, transform.up, m_rb.velocity.magnitude, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.USensor = Physics2D.Raycast(transform.position, transform.up, m_sensorLength, LayerMask.GetMask(OBSTACLE));
         //m_sensors.URSensor = Physics2D.Raycast(transform.position, (transform.up + transform.right).normalized, m_sensorLength, LayerMask.GetMask(OBSTACLE));
-        //m_sensors.RSensor = Physics2D.Raycast(transform.position, transform.right, m_rb.velocity.magnitude, LayerMask.GetMask(OBSTACLE));
-        //m_sensors.RDSensor = Physics2D.Raycast(transform.position, (-transform.up + transform.right).normalized, m_rb.velocity.magnitude, LayerMask.GetMask(OBSTACLE));
-        //m_sensors.DSensor = Physics2D.Raycast(transform.position, -transform.up, m_rb.velocity.magnitude, LayerMask.GetMask(OBSTACLE));
-        //m_sensors.DLSensor = Physics2D.Raycast(transform.position, (-transform.up + -transform.right).normalized, m_rb.velocity.magnitude, LayerMask.GetMask(OBSTACLE));
-        //m_sensors.LSensor = Physics2D.Raycast(transform.position, -transform.right, m_rb.velocity.magnitude, LayerMask.GetMask(OBSTACLE));
-        //m_sensors.LUSensor = Physics2D.Raycast(transform.position, (transform.up + -transform.right).normalized, m_rb.velocity.magnitude, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.RSensor = Physics2D.Raycast(transform.position, transform.right, m_sensorLength, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.RDSensor = Physics2D.Raycast(transform.position, (-transform.up + transform.right).normalized, m_sensorLength, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.DSensor = Physics2D.Raycast(transform.position, -transform.up, m_sensorLength, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.DLSensor = Physics2D.Raycast(transform.position, (-transform.up + -transform.right).normalized, m_sensorLength, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.LSensor = Physics2D.Raycast(transform.position, -transform.right, m_sensorLength, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.LUSensor = Physics2D.Raycast(transform.position, (transform.up + -transform.right).normalized, m_sensorLength, LayerMask.GetMask(OBSTACLE));
+        float sensorLength = m_rb.velocity.magnitude * m_rbVelocityPercetange;
+        m_sensors.USensor = Physics2D.Raycast(transform.position, transform.up, sensorLength, LayerMask.GetMask(OBSTACLE));
+        m_sensors.URSensor = Physics2D.Raycast(transform.position, (transform.up + transform.right).normalized, m_sensorLength, LayerMask.GetMask(OBSTACLE));
+        m_sensors.RSensor = Physics2D.Raycast(transform.position, transform.right, sensorLength, LayerMask.GetMask(OBSTACLE));
+        m_sensors.RDSensor = Physics2D.Raycast(transform.position, (-transform.up + transform.right).normalized,sensorLength, LayerMask.GetMask(OBSTACLE));
+        m_sensors.DSensor = Physics2D.Raycast(transform.position, -transform.up,sensorLength, LayerMask.GetMask(OBSTACLE));
+        m_sensors.DLSensor = Physics2D.Raycast(transform.position, (-transform.up + -transform.right).normalized,sensorLength, LayerMask.GetMask(OBSTACLE));
+        m_sensors.LSensor = Physics2D.Raycast(transform.position, -transform.right,sensorLength, LayerMask.GetMask(OBSTACLE));
+        m_sensors.LUSensor = Physics2D.Raycast(transform.position, (transform.up + -transform.right).normalized, sensorLength, LayerMask.GetMask(OBSTACLE));
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, transform.position + ((transform.up + transform.right).normalized * m_sensorLength));
-        Gizmos.DrawLine(transform.position, transform.position + ((-transform.up + transform.right).normalized * m_sensorLength));
-        Gizmos.DrawLine(transform.position, transform.position + ((-transform.up + -transform.right).normalized * m_sensorLength));
-        Gizmos.DrawLine(transform.position, transform.position + ((transform.up + -transform.right).normalized * m_sensorLength));
-        Gizmos.DrawLine(transform.position, transform.position + transform.up  * m_sensorLength);
-        Gizmos.DrawLine(transform.position, transform.position + -transform.up  * m_sensorLength);
+
+        float sensorLength = m_rb.velocity.magnitude * m_rbVelocityPercetange;
+        Gizmos.DrawLine(transform.position, transform.position + transform.up  *sensorLength);
+        Gizmos.DrawLine(transform.position, transform.position + -transform.up  * sensorLength);
+        Gizmos.DrawLine(transform.position, transform.position + transform.right  *sensorLength);
+        Gizmos.DrawLine(transform.position, transform.position + -transform.right  *sensorLength);
         
     }
 }
