@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class WalkController : MonoBehaviour
 {
-    private Rigidbody m_rigidBody;
-    private float xVelocity = 0;
+    private Vector3 velocity = Vector3.zero;
+    private bool grounded = false;
+    private bool jumping = false;
 
     [SerializeField]
-    private float m_xAcceleration;
+    private float m_walkAcceleration;
     [SerializeField]
     private float m_maxSpeed;
     [SerializeField]
@@ -16,25 +17,34 @@ public class WalkController : MonoBehaviour
     [SerializeField]
     private float m_maxJumpHeight;
     [SerializeField]
+    private float m_gravity;
+    [SerializeField]
+    private float m_terminalVelocity;
+    [SerializeField]
     private float m_deadZone;
-
-    // Start is called before the first frame update
-    void Awake()
-    {
-        m_rigidBody = gameObject.GetComponent<Rigidbody>();
-    }
 
     // Update is called once per frame
     void Update()
     {
-        if (Mathf.Abs(Input.GetAxis("Horizontal")) <= m_deadZone)
+        if(Physics.Raycast(transform.position, -transform.up, 0.415f) && !jumping)
         {
-            xVelocity = 0;
+            grounded = true;
+            velocity.y = 0;
         }
         else
         {
-            xVelocity = Mathf.Clamp(m_rigidBody.velocity.x + Input.GetAxis("Horizontal"), -m_maxSpeed, m_maxSpeed);
+            grounded = false;
+            velocity.y = Mathf.Clamp(velocity.y - m_gravity, -m_terminalVelocity, m_terminalVelocity);
+
         }
-        m_rigidBody.velocity = Vector3.right * xVelocity;
+        if (Mathf.Abs(Input.GetAxis("Horizontal")) <= m_deadZone)
+        {
+            velocity.x = 0;
+        }
+        else
+        {
+            velocity.x = Mathf.Clamp(velocity.x + Input.GetAxis("Horizontal") * m_walkAcceleration, -m_maxSpeed, m_maxSpeed);
+        }
+        transform.position += velocity * Time.deltaTime;
     }
 }
