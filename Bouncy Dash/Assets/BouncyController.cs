@@ -5,6 +5,7 @@ using UnityEngine;
 public class BouncyController : MonoBehaviour
 {
     Vector2 m_currentVelocity = new Vector2(1,1);
+    Vector2 m_lastInputDirection;
     float m_currentHorizontalSpeed = 0;
     float m_maxHorizontalSpeed = 10f;
     Rigidbody2D m_rb;
@@ -13,6 +14,9 @@ public class BouncyController : MonoBehaviour
     float m_minJumpheight = 7f;
     float m_timeToReachApex = 1f;
     float m_maxJumpHeight;//Will be initialized during Start()
+
+    //Horizontal force properties
+    float m_timetoReachMaxSpeedFromInput = 4f;
 
     //Gravity properties
     float m_gravityScalar = 1f;
@@ -63,14 +67,15 @@ public class BouncyController : MonoBehaviour
         ApplyGravityIfNotGrounded();
 
         CheckJumpStatus();
+        CheckPlayerHorizontalInput();
     }
 
     private void FixedUpdate()
     {
         transform.position = m_rb.position;
 
-       
-        m_currentVelocity = new Vector2(m_currentHorizontalSpeed, m_currentVerticalSpeed);
+
+        m_currentVelocity = (m_lastInputDirection * m_currentHorizontalSpeed) + new Vector2(0, m_currentVerticalSpeed);
 
         m_rb.velocity = m_currentVelocity;
     }
@@ -162,7 +167,19 @@ public class BouncyController : MonoBehaviour
             m_currentVerticalSpeed = (2 * m_minJumpheight) / m_timeToReachApex;
         }
     }
-//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    private void CheckPlayerHorizontalInput()
+    {
+        float horizontalAcc = (m_maxHorizontalSpeed / m_timetoReachMaxSpeedFromInput) * Time.deltaTime;
+        if (InputManager.PressingMovementInput())
+        {
+            m_currentHorizontalSpeed += horizontalAcc;
+            m_lastInputDirection = InputManager.GetMovementInput();
+        }
+    }
+ //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     private void ReactToBorders()
     {
         
