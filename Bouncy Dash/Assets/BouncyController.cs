@@ -4,15 +4,18 @@ using UnityEngine;
 
 public class BouncyController : MonoBehaviour
 {
-    Vector2 m_currentDirection = new Vector2(1,1);
-    float m_acuumulatedSpeed = 1f;
-    float m_maxSpeed = 10f;
+    Vector2 m_currentVelocity = new Vector2(1,1);
+    float m_currentHorizontalSpeed = 0;
+    float m_maxHorizontalSpeed = 10f;
     Rigidbody2D m_rb;
 
     //Gravity properties
-    float m_gravity;
-    float m_terminalVelocity;
+    float m_gravityScalar = 1f;
+    float m_timeToReachTerminalVelocity = 1f;
+    float m_terminalVelocity = 22f;
     float m_currentVerticalSpeed;
+
+    bool m_grounded = false;
 
     //Radar properties
     float m_radarRadius = 5f;
@@ -48,14 +51,24 @@ public class BouncyController : MonoBehaviour
     void Update()
     {
         SetSensors();
-        m_acuumulatedSpeed = Mathf.Clamp(m_acuumulatedSpeed, 0, m_maxSpeed);
+
+        m_currentHorizontalSpeed = Mathf.Clamp(m_currentHorizontalSpeed, 0, m_maxHorizontalSpeed);
+        m_currentVerticalSpeed = Mathf.Clamp(m_currentVerticalSpeed, -m_terminalVelocity, m_terminalVelocity);
+ 
+        ApplyGravityIfNotGrounded();
     }
 
     private void FixedUpdate()
     {
         transform.position = m_rb.position;
-        m_rb.velocity = m_currentDirection * m_acuumulatedSpeed;
-        Debug.Log(m_rb.velocity.normalized);
+
+        Vector2 horizontalVelocity = new Vector2(m_currentHorizontalSpeed, 0);
+        Vector2 verticalVelocity = new Vector2(0, m_currentVerticalSpeed);
+        m_currentVelocity = horizontalVelocity + verticalVelocity;
+
+        m_rb.velocity = m_currentVelocity;
+
+        Debug.Log(m_currentVelocity);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -64,15 +77,34 @@ public class BouncyController : MonoBehaviour
         {
             Destroy(collision.gameObject);  
         }
+        if (m_rb.velocity.y < 0 && m_sensors.DSensor)
+        {
+            m_grounded = true;
+        }
         ReactToBorders();
         CheckEnemyRadar();
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (m_grounded) { m_grounded = false; }
+    }
+
+    private void ApplyGravityIfNotGrounded()
+    {
+        //TODO when happy with testing values, move initialization to start, to avoid uneccessary operations
+        float gravityAccRate = (m_terminalVelocity / m_timeToReachTerminalVelocity) * m_gravityScalar;
+        gravityAccRate *= Time.deltaTime;
+        if (!m_grounded)
+        {
+            m_currentVerticalSpeed -= gravityAccRate;
+        }
     }
     private void BounceTowardsEnemyInRadar(Transform closestValidEnemy = null)
     {
         if (closestValidEnemy)
         {
             Vector2 closestEnemyPosition = new Vector2(closestValidEnemy.position.x, closestValidEnemy.position.y);
-            m_currentDirection = (closestEnemyPosition - m_rb.position).normalized;
+            m_currentVelocity = (closestEnemyPosition - m_rb.position).normalized;
         }
     }
     private void CheckEnemyRadar()
@@ -114,20 +146,16 @@ public class BouncyController : MonoBehaviour
     }
     private void ReactToBorders()
     {
-        m_acuumulatedSpeed += 2;
+        
         if (m_sensors.USensor || m_sensors.DSensor)
         {
-            m_currentDirection.y *= -1;
+            //Bounce a bit less everytime
+            m_currentVerticalSpeed *= -0.75f;
         }
         if (m_sensors.RSensor || m_sensors.LSensor)
         {
-            m_currentDirection.x *= -1;
+           m_currentHorizontalSpeed = (m_currentHorizontalSpeed + 2) * -1;
         }
-        else
-        {
-            //m_currentVelocity *= -1;
-        }
-       
     }
 
     //private Sensors GetSensorHit()
