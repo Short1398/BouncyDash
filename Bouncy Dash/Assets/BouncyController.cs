@@ -34,8 +34,8 @@ public class BouncyController : MonoBehaviour
     }
 
     ActiveSensors m_sensors;
-    float m_sensorLength = 0.75f;
-    float m_rbVelocityPercetange = 0.15f;
+    float m_minSensorLength = 0.75f;
+    float m_rbVelocityPercetange = 0.25f;
 
     //Layers or axis
     const string OBSTACLE = "Obstacle";
@@ -67,8 +67,6 @@ public class BouncyController : MonoBehaviour
         m_currentVelocity = horizontalVelocity + verticalVelocity;
 
         m_rb.velocity = m_currentVelocity;
-
-        Debug.Log(m_currentVelocity);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -87,6 +85,8 @@ public class BouncyController : MonoBehaviour
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (m_grounded) { m_grounded = false; }
+
+        Debug.Log(m_currentVerticalSpeed);
     }
 
     private void ApplyGravityIfNotGrounded()
@@ -98,6 +98,7 @@ public class BouncyController : MonoBehaviour
         {
             m_currentVerticalSpeed -= gravityAccRate;
         }
+        else if(m_grounded && Mathf.Abs(m_currentVerticalSpeed) < gravityAccRate) { m_currentVerticalSpeed = 0; }
     }
     private void BounceTowardsEnemyInRadar(Transform closestValidEnemy = null)
     {
@@ -173,8 +174,9 @@ public class BouncyController : MonoBehaviour
         //m_sensors.LSensor = Physics2D.Raycast(transform.position, -transform.right, m_sensorLength, LayerMask.GetMask(OBSTACLE));
         //m_sensors.LUSensor = Physics2D.Raycast(transform.position, (transform.up + -transform.right).normalized, m_sensorLength, LayerMask.GetMask(OBSTACLE));
         float sensorLength = m_rb.velocity.magnitude * m_rbVelocityPercetange;
+        sensorLength = Mathf.Clamp(sensorLength, m_minSensorLength, m_minSensorLength + sensorLength);
         m_sensors.USensor = Physics2D.Raycast(transform.position, transform.up, sensorLength, LayerMask.GetMask(OBSTACLE));
-        m_sensors.URSensor = Physics2D.Raycast(transform.position, (transform.up + transform.right).normalized, m_sensorLength, LayerMask.GetMask(OBSTACLE));
+        m_sensors.URSensor = Physics2D.Raycast(transform.position, (transform.up + transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
         m_sensors.RSensor = Physics2D.Raycast(transform.position, transform.right, sensorLength, LayerMask.GetMask(OBSTACLE));
         m_sensors.RDSensor = Physics2D.Raycast(transform.position, (-transform.up + transform.right).normalized,sensorLength, LayerMask.GetMask(OBSTACLE));
         m_sensors.DSensor = Physics2D.Raycast(transform.position, -transform.up,sensorLength, LayerMask.GetMask(OBSTACLE));
