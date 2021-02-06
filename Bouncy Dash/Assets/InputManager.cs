@@ -19,9 +19,9 @@ public class InputManager : MonoBehaviour
         return Input.GetButton(HORIZONTALMOV);
     }
 
-    public static bool JumpPressed()
+    public static bool WasJumpPressed()
     {
-        return Input.GetButtonDown(JUMP_BUTTON);
+        return Input.GetButtonUp(JUMP_BUTTON);
     }
 
     public static bool JumpHeld()

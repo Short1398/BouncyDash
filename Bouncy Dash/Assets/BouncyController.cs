@@ -9,6 +9,11 @@ public class BouncyController : MonoBehaviour
     float m_maxHorizontalSpeed = 10f;
     Rigidbody2D m_rb;
 
+    //Jump properties
+    float m_minJumpheight = 7f;
+    float m_timeToReachApex = 1f;
+    float m_maxJumpHeight;//Will be initialized during Start()
+
     //Gravity properties
     float m_gravityScalar = 1f;
     float m_timeToReachTerminalVelocity = 1f;
@@ -56,15 +61,16 @@ public class BouncyController : MonoBehaviour
         m_currentVerticalSpeed = Mathf.Clamp(m_currentVerticalSpeed, -m_terminalVelocity, m_terminalVelocity);
  
         ApplyGravityIfNotGrounded();
+
+        CheckJumpStatus();
     }
 
     private void FixedUpdate()
     {
         transform.position = m_rb.position;
 
-        Vector2 horizontalVelocity = new Vector2(m_currentHorizontalSpeed, 0);
-        Vector2 verticalVelocity = new Vector2(0, m_currentVerticalSpeed);
-        m_currentVelocity = horizontalVelocity + verticalVelocity;
+       
+        m_currentVelocity = new Vector2(m_currentHorizontalSpeed, m_currentVerticalSpeed);
 
         m_rb.velocity = m_currentVelocity;
     }
@@ -85,9 +91,8 @@ public class BouncyController : MonoBehaviour
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (m_grounded) { m_grounded = false; }
-
-        Debug.Log(m_currentVerticalSpeed);
     }
+ //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     private void ApplyGravityIfNotGrounded()
     {
@@ -100,6 +105,8 @@ public class BouncyController : MonoBehaviour
         }
         else if(m_grounded && Mathf.Abs(m_currentVerticalSpeed) < gravityAccRate) { m_currentVerticalSpeed = 0; }
     }
+ //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     private void BounceTowardsEnemyInRadar(Transform closestValidEnemy = null)
     {
         if (closestValidEnemy)
@@ -145,6 +152,17 @@ public class BouncyController : MonoBehaviour
         //Check if there is a valid path to closest enemy
         if(closestValidEnemy != null) { BounceTowardsEnemyInRadar(closestValidEnemy); }
     }
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    private void CheckJumpStatus()
+    {
+        if (m_grounded && InputManager.WasJumpPressed())
+        {
+            //TODO Adjustable jump scalar for when jump is held and then released
+            m_currentVerticalSpeed = (2 * m_minJumpheight) / m_timeToReachApex;
+        }
+    }
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private void ReactToBorders()
     {
         
@@ -158,6 +176,7 @@ public class BouncyController : MonoBehaviour
            m_currentHorizontalSpeed = (m_currentHorizontalSpeed + 2) * -1;
         }
     }
+ //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     //private Sensors GetSensorHit()
     //{
