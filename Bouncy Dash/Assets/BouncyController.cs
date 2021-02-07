@@ -22,6 +22,7 @@ public class BouncyController : MonoBehaviour
 
     //Horizontal force properties
     float m_timetoReachMaxSpeedFromInput = 4f;
+    //Quick turn
 
     //Gravity properties
     float m_gravityScalar = 1f;
@@ -196,17 +197,26 @@ public class BouncyController : MonoBehaviour
 
     private void CheckPlayerHorizontalInput()
     {
-        float horizontalAcc = (m_maxHorizontalSpeed / m_timetoReachMaxSpeedFromInput) * Time.deltaTime;
-        if (InputManager.PressingMovementInput())
+        if (IsQuickturning())
         {
-            m_currentHorizontalSpeed += horizontalAcc;
-            m_lastInputDirection = InputManager.GetMovementInput();
+            float quickTurnRate = (m_maxHorizontalSpeed / (m_timetoReachMaxSpeedFromInput * 2)) * Time.deltaTime;
+            m_currentHorizontalSpeed -= quickTurnRate;
         }
+        else
+        {
+            float horizontalAcc = (m_maxHorizontalSpeed / m_timetoReachMaxSpeedFromInput) * Time.deltaTime;
+            if (InputManager.PressingMovementInput())
+            {
+                m_currentHorizontalSpeed += horizontalAcc;
+                m_lastInputDirection = InputManager.GetMovementInput();
+            }
+        }
+       
     }
 
-    private void HandleQuickTurn()
+    private bool IsQuickturning()
     {
-
+        return m_lastInputDirection != InputManager.GetMovementInput() && m_currentHorizontalSpeed > 0;
     }
  //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
