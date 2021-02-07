@@ -61,10 +61,20 @@ public class BouncyController : MonoBehaviour
     const string OBSTACLE = "Obstacle";
     const string THREAT = "Threat";
 
+    //States
+    enum BouncyState
+    {
+        FREE_ROAMING,
+        CHAINED_ATTACK
+    }
+
+    BouncyState m_CurrentState;
     // Start is called before the first frame update
     void Start()
     {
         m_rb = GetComponent<Rigidbody2D>();
+
+        m_CurrentState = BouncyState.FREE_ROAMING;
     }
 
     // Update is called once per frame
@@ -74,20 +84,31 @@ public class BouncyController : MonoBehaviour
 
         m_currentHorizontalSpeed = Mathf.Clamp(m_currentHorizontalSpeed, 0, m_maxHorizontalSpeed);
         m_currentVerticalSpeed = Mathf.Clamp(m_currentVerticalSpeed, -m_terminalVelocity, m_terminalVelocity);
- 
-        ApplyGravityIfNotGrounded();
 
-        CheckJumpStatus();
-        CheckPlayerHorizontalInput();
+        if (m_CurrentState == BouncyState.FREE_ROAMING)
+        {
+            ApplyGravityIfNotGrounded();
+            CheckJumpStatus();
+            CheckPlayerHorizontalInput();
+        }
+        Debug.Log(m_CurrentState);
     }
 
     private void FixedUpdate()
     {
         transform.position = m_rb.position;
 
-        m_currentHorizontalVelocity = m_lastInputDirection * m_currentHorizontalSpeed;
-        m_currentVerticallVelocity = new Vector2(0, m_currentVerticalSpeed);
-        m_currentVelocity = m_currentHorizontalVelocity + m_currentVerticallVelocity;
+        if (m_CurrentState == BouncyState.FREE_ROAMING)
+        {
+            m_currentHorizontalVelocity = m_lastInputDirection * m_currentHorizontalSpeed;
+            m_currentVerticallVelocity = new Vector2(0, m_currentVerticalSpeed);
+            m_currentVelocity = m_currentHorizontalVelocity + m_currentVerticallVelocity;
+        }
+        else
+        {
+            m_currentVelocity = m_currentVelocity.normalized * (m_currentHorizontalSpeed + Mathf.Abs(m_currentVerticalSpeed));
+        }
+           
 
         m_rb.velocity = m_currentVelocity;
     }
@@ -96,19 +117,25 @@ public class BouncyController : MonoBehaviour
     {
         if (collision.GetComponent<Enemy_Base>())
         {
-            Destroy(collision.gameObject);  
+            Destroy(collision.gameObject);
+            CheckEnemyRadar();
         }
-        if (m_rb.velocity.y < 0 && m_sensors.DSensor)
+        
+        if (m_CurrentState == BouncyState.FREE_ROAMING)
         {
-            m_grounded = true;
-            if (m_bounceless)
+            if (m_rb.velocity.y < 0 && m_sensors.DSensor)
             {
-                m_rb.position = new Vector2(m_rb.position.x, m_rb.position.y + 0.3f);
+                m_grounded = true;
+                if (m_bounceless)
+                {
+                    m_rb.position = new Vector2(m_rb.position.x, m_rb.position.y + 0.3f);
+                }
+
             }
-           
-        }
-        ReactToBorders();
-        CheckEnemyRadar();
+            ReactToBorders();
+        } 
+
+
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
@@ -142,6 +169,8 @@ public class BouncyController : MonoBehaviour
     {
         if (closestValidEnemy)
         {
+            m_CurrentState = BouncyState.CHAINED_ATTACK;
+
             Vector2 closestEnemyPosition = new Vector2(closestValidEnemy.position.x, closestValidEnemy.position.y);
             m_currentVelocity = (closestEnemyPosition - m_rb.position).normalized;
         }
@@ -150,6 +179,11 @@ public class BouncyController : MonoBehaviour
     {
         //Use a sphere cast to find all enemies within player radar
         Collider2D[] enemiesInRadar = Physics2D.OverlapCircleAll(m_rb.position, m_radarRadius, LayerMask.GetMask(THREAT));
+        if(enemiesInRadar.Length == 0)
+        {
+            m_CurrentState = BouncyState.FREE_ROAMING;
+            return;
+        }
         HashSet<GameObject> validEnemies = new HashSet<GameObject>();//If there is no obstacle between the player and enemy, then it is a valid path
 
         //Find all valid enemies in radar
