@@ -369,10 +369,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_walkAcceleration: 3
-  m_maxSpeed: 4
-  m_jumpForce: 8.5
+  m_maxWalkSpeed: 4
+  m_dashSpeed: 10
+  m_dashDuration: 0.15
+  m_jumpForce: 8.75
+  m_baseGravity: 0.3
   m_jumpGravity: 0.2
-  m_gravity: 0.3
   m_terminalVelocity: 10
   m_deceleration: 4
   m_deadZone: 0.25
