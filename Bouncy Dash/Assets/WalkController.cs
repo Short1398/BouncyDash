@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class WalkController : MonoBehaviour
 {
+    private CapsuleCollider m_capsuleCollider;
+    private Rigidbody m_rigidBody;
     private Vector3 velocity = Vector3.zero;
     private bool grounded = false;
     private bool jumping = false;
@@ -15,40 +17,68 @@ public class WalkController : MonoBehaviour
     [SerializeField]
     private float m_jumpForce;
     [SerializeField]
+    private float m_jumpGravity;
+    [SerializeField]
     private float m_gravity;
     [SerializeField]
     private float m_terminalVelocity;
     [SerializeField]
     private float m_deceleration;
+    [SerializeField]
+    private float m_deadZone;
+
+    private void Awake()
+    {
+        m_capsuleCollider = gameObject.GetComponent<CapsuleCollider>();
+        m_rigidBody = gameObject.GetComponent<Rigidbody>();
+    }
 
     // Update is called once per frame
     void Update()
     {
-        if (Physics.Raycast(transform.position, -transform.up, 0.415f)) {
-            if (jumping && Input.GetAxis("Vertical") <= 0.9) {
-                jumping = false;
-            }
-            else
-            {
-                grounded = true;
-                velocity.y = 0;
-            }
+        // Gravity & Jump
+        grounded = false;
+        if (Physics.Raycast(transform.position, -transform.up, m_capsuleCollider.height / 2 + 0.1f)) {
+            grounded = true;
         }
-        else {
-            grounded = false;
-            velocity.y = Mathf.Clamp(velocity.y - m_gravity, -m_terminalVelocity, m_terminalVelocity);
-        }
-        if (0 < Input.GetAxis("Vertical") && grounded && !jumping) {
-            jumping = true;
+        if (Input.GetKeyDown(KeyCode.Z) && grounded) {
+            Debug.Log(grounded);
             velocity.y += m_jumpForce;
+            grounded = false;
+            jumping = true;
         }
-        if (Mathf.Abs(velocity.x) < m_deceleration) {
+        if (!Input.GetKey(KeyCode.Z)) {
+            jumping = false;
+        }
+        if (!grounded) {
+            if (jumping) {
+                velocity.y = Mathf.Clamp(velocity.y - m_jumpGravity, -m_terminalVelocity, m_terminalVelocity);
+            }
+            else {
+                velocity.y = Mathf.Clamp(velocity.y - m_gravity, -m_terminalVelocity, m_terminalVelocity);
+            }
+        }
+
+        // Horizontal Movement
+        if (m_deadZone < Mathf.Abs(Input.GetAxis("Horizontal")))
+        {
+            velocity.x = Mathf.Clamp(velocity.x + Mathf.Sign(Input.GetAxis("Horizontal")) * m_walkAcceleration, -m_maxSpeed, m_maxSpeed);
+        }
+        else if (m_deceleration <= Mathf.Abs(velocity.x)) {
+            velocity.x -= Mathf.Sign(velocity.x) * m_deceleration;
+        } else {
             velocity.x = 0;
         }
-        else {
-            velocity.x -= Mathf.Sign(velocity.x) * m_deceleration;
+
+        // Nullifying velocity when colliding with objects (stops player from sticking to walls, being able to jump 'around' ceilings, etc.)
+        if (Physics.Raycast(transform.position, Mathf.Sign(velocity.x) * transform.right, m_capsuleCollider.radius + 0.1f)) {
+            velocity.x = 0;
         }
-        velocity.x = Mathf.Clamp(velocity.x + Input.GetAxis("Horizontal") * m_walkAcceleration, -m_maxSpeed, m_maxSpeed);
-        transform.position += velocity * Time.deltaTime;
+        if (Physics.Raycast(transform.position, Mathf.Sign(velocity.y) * transform.up, m_capsuleCollider.height / 2 + 0.1f)) {
+            velocity.y = 0;
+        }
+
+        // Applying velocity to Rigidbody
+        m_rigidBody.velocity = velocity;
     }
 }
