@@ -6,8 +6,13 @@ public class BouncyController : MonoBehaviour
 {
     Vector2 m_currentVelocity = new Vector2(1,1);
     Vector2 m_lastInputDirection;
+    Vector2 m_currentHorizontalVelocity;
+    Vector2 m_currentVerticallVelocity;
+
     float m_currentHorizontalSpeed = 0;
     float m_maxHorizontalSpeed = 10f;
+
+    //Components
     Rigidbody2D m_rb;
 
     //Jump properties
@@ -25,9 +30,14 @@ public class BouncyController : MonoBehaviour
     float m_currentVerticalSpeed;
 
     bool m_grounded = false;
+    bool m_bounceless = false;
 
     //Radar properties
     float m_radarRadius = 5f;
+
+    //Ground Buffer
+    float m_groundBufferTime = 0.1f;
+    float m_groundBufferHandler;
 
     //Sensor properties
     struct ActiveSensors
@@ -74,8 +84,9 @@ public class BouncyController : MonoBehaviour
     {
         transform.position = m_rb.position;
 
-
-        m_currentVelocity = (m_lastInputDirection * m_currentHorizontalSpeed) + new Vector2(0, m_currentVerticalSpeed);
+        m_currentHorizontalVelocity = m_lastInputDirection * m_currentHorizontalSpeed;
+        m_currentVerticallVelocity = new Vector2(0, m_currentVerticalSpeed);
+        m_currentVelocity = m_currentHorizontalVelocity + m_currentVerticallVelocity;
 
         m_rb.velocity = m_currentVelocity;
     }
@@ -89,13 +100,18 @@ public class BouncyController : MonoBehaviour
         if (m_rb.velocity.y < 0 && m_sensors.DSensor)
         {
             m_grounded = true;
+            if (m_bounceless)
+            {
+                m_rb.position = new Vector2(m_rb.position.x, m_rb.position.y + 0.3f);
+            }
+           
         }
         ReactToBorders();
         CheckEnemyRadar();
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (m_grounded) { m_grounded = false; }
+        if (m_grounded && m_currentVerticalSpeed > 0) { m_grounded = false; }
     }
  //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -104,11 +120,20 @@ public class BouncyController : MonoBehaviour
         //TODO when happy with testing values, move initialization to start, to avoid uneccessary operations
         float gravityAccRate = (m_terminalVelocity / m_timeToReachTerminalVelocity) * m_gravityScalar;
         gravityAccRate *= Time.deltaTime;
-        if (!m_grounded)
+        if (!m_grounded && Time.time > m_groundBufferHandler)
         {
             m_currentVerticalSpeed -= gravityAccRate;
+            m_bounceless = false;
         }
-        else if(m_grounded && Mathf.Abs(m_currentVerticalSpeed) < gravityAccRate) { m_currentVerticalSpeed = 0; }
+        else if(m_grounded && Mathf.Abs(m_currentVerticalSpeed) < gravityAccRate)
+        {
+            m_bounceless = true;
+            m_currentVerticalSpeed = 0;
+          
+
+            //Reset handler
+            m_groundBufferHandler = Time.time + m_groundBufferTime;
+        }
     }
  //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -178,19 +203,28 @@ public class BouncyController : MonoBehaviour
             m_lastInputDirection = InputManager.GetMovementInput();
         }
     }
+
+    private void HandleQuickTurn()
+    {
+
+    }
  //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     private void ReactToBorders()
     {
-        
-        if (m_sensors.USensor || m_sensors.DSensor)
+        if (!m_bounceless)
         {
-            //Bounce a bit less everytime
-            m_currentVerticalSpeed *= -0.75f;
+            if (m_sensors.USensor || m_sensors.DSensor)
+            {
+                //Bounce a bit less everytime
+                m_currentVerticalSpeed *= -0.75f;
+            }
         }
+       
         if (m_sensors.RSensor || m_sensors.LSensor)
         {
-           m_currentHorizontalSpeed = (m_currentHorizontalSpeed + 2) * -1;
+            m_currentHorizontalSpeed += 2;
+            m_lastInputDirection *= -1;
         }
     }
  //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -225,11 +259,15 @@ public class BouncyController : MonoBehaviour
     {
         Gizmos.color = Color.red;
 
-        float sensorLength = m_rb.velocity.magnitude * m_rbVelocityPercetange;
-        Gizmos.DrawLine(transform.position, transform.position + transform.up  *sensorLength);
-        Gizmos.DrawLine(transform.position, transform.position + -transform.up  * sensorLength);
-        Gizmos.DrawLine(transform.position, transform.position + transform.right  *sensorLength);
-        Gizmos.DrawLine(transform.position, transform.position + -transform.right  *sensorLength);
+        if (m_rb)
+        {
+            float sensorLength = m_rb.velocity.magnitude * m_rbVelocityPercetange;
+            Gizmos.DrawLine(transform.position, transform.position + transform.up * sensorLength);
+            Gizmos.DrawLine(transform.position, transform.position + -transform.up * sensorLength);
+            Gizmos.DrawLine(transform.position, transform.position + transform.right * sensorLength);
+            Gizmos.DrawLine(transform.position, transform.position + -transform.right * sensorLength);
+        }
         
+
     }
 }
