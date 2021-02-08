@@ -6,6 +6,7 @@ public class BouncyController : MonoBehaviour
 {
     Vector2 m_currentVelocity = new Vector2(1,1);
     Vector2 m_lastInputDirection;
+    Vector2 m_lastPositionAfterHittinGround;
     Vector2 m_currentHorizontalVelocity;
     Vector2 m_currentVerticallVelocity;
 
@@ -16,7 +17,7 @@ public class BouncyController : MonoBehaviour
     Rigidbody2D m_rb;
 
     //Jump properties
-    float m_minJumpheight = 7f;
+    float m_minJumpheight = 6f;
     float m_timeToReachApex = 1f;
     float m_maxJumpHeight;//Will be initialized during Start()
 
@@ -69,6 +70,9 @@ public class BouncyController : MonoBehaviour
     }
 
     BouncyState m_CurrentState;
+
+
+    int collisionCounter = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -91,7 +95,7 @@ public class BouncyController : MonoBehaviour
             CheckJumpStatus();
             CheckPlayerHorizontalInput();
         }
-        Debug.Log(m_CurrentState);
+
     }
 
     private void FixedUpdate()
@@ -111,6 +115,9 @@ public class BouncyController : MonoBehaviour
            
 
         m_rb.velocity = m_currentVelocity;
+
+        Debug.Log(m_rb.velocity);
+
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -126,13 +133,13 @@ public class BouncyController : MonoBehaviour
             if (m_rb.velocity.y < 0 && m_sensors.DSensor)
             {
                 m_grounded = true;
-                if (m_bounceless)
-                {
-                    m_rb.position = new Vector2(m_rb.position.x, m_rb.position.y + 0.3f);
-                }
 
+                m_lastPositionAfterHittinGround = m_rb.position;
             }
             ReactToBorders();
+            collisionCounter++;
+            //Debug.Log("Collision #: " + collisionCounter);
+            //Debug.Log(collision.gameObject.name);
         } 
 
 
@@ -157,8 +164,11 @@ public class BouncyController : MonoBehaviour
         {
             m_bounceless = true;
             m_currentVerticalSpeed = 0;
-          
 
+            if (m_bounceless)
+            {
+                m_rb.position = new Vector2(m_rb.position.x, m_lastPositionAfterHittinGround.y + 0.09f);
+            }
             //Reset handler
             m_groundBufferHandler = Time.time + m_groundBufferTime;
         }
@@ -225,6 +235,7 @@ public class BouncyController : MonoBehaviour
         {
             //TODO Adjustable jump scalar for when jump is held and then released
             m_currentVerticalSpeed = (2 * m_minJumpheight) / m_timeToReachApex;
+            m_grounded = false;
         }
     }
  //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -233,24 +244,23 @@ public class BouncyController : MonoBehaviour
     {
         if (IsQuickturning())
         {
-            float quickTurnRate = (m_maxHorizontalSpeed / (m_timetoReachMaxSpeedFromInput * 2)) * Time.deltaTime;
+            float quickTurnRate = (m_maxHorizontalSpeed / m_timetoReachMaxSpeedFromInput ) * Time.deltaTime;
             m_currentHorizontalSpeed -= quickTurnRate;
         }
-        else
+        else if (InputManager.PressingMovementInput())
         {
             float horizontalAcc = (m_maxHorizontalSpeed / m_timetoReachMaxSpeedFromInput) * Time.deltaTime;
-            if (InputManager.PressingMovementInput())
-            {
-                m_currentHorizontalSpeed += horizontalAcc;
-                m_lastInputDirection = InputManager.GetMovementInput();
-            }
+            
+            m_currentHorizontalSpeed += horizontalAcc;
+            m_lastInputDirection = InputManager.GetMovementInput();
+            
         }
        
     }
 
     private bool IsQuickturning()
     {
-        return m_lastInputDirection != InputManager.GetMovementInput() && m_currentHorizontalSpeed > 0;
+        return InputManager.PressingMovementInput() && m_lastInputDirection != InputManager.GetMovementInput() && m_currentHorizontalSpeed > 0;
     }
  //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
