@@ -18,7 +18,10 @@ public class BouncyController : MonoBehaviour
 
     //Jump properties
     float m_minJumpheight = 6f;
+    float m_maxJumpScalar = 1.5f;
     float m_timeToReachApex = 1f;
+    float m_jumpChargeTime = 2f;
+    float m_currentJumpHeight;
     float m_maxJumpHeight;//Will be initialized during Start()
 
     //Horizontal force properties
@@ -79,6 +82,9 @@ public class BouncyController : MonoBehaviour
         m_rb = GetComponent<Rigidbody2D>();
 
         m_CurrentState = BouncyState.FREE_ROAMING;
+
+        m_maxJumpHeight = m_minJumpheight * m_maxJumpScalar;
+        m_currentJumpHeight = m_minJumpheight;
     }
 
     // Update is called once per frame
@@ -115,8 +121,6 @@ public class BouncyController : MonoBehaviour
            
 
         m_rb.velocity = m_currentVelocity;
-
-        Debug.Log(m_rb.velocity);
 
     }
 
@@ -234,8 +238,16 @@ public class BouncyController : MonoBehaviour
         if (m_grounded && InputManager.WasJumpPressed())
         {
             //TODO Adjustable jump scalar for when jump is held and then released
-            m_currentVerticalSpeed = (2 * m_minJumpheight) / m_timeToReachApex;
+            m_currentVerticalSpeed = (2 * m_currentJumpHeight) / m_timeToReachApex;
             m_grounded = false;
+            m_currentJumpHeight = m_minJumpheight;
+        }
+        else if (m_grounded && InputManager.JumpHeld())//Variable jump height
+        {
+            float jumpAcc = ((m_maxJumpHeight - m_minJumpheight) / m_jumpChargeTime) * Time.deltaTime;
+            m_currentJumpHeight += jumpAcc;
+
+            m_currentJumpHeight = Mathf.Clamp(m_currentJumpHeight, m_minJumpheight, m_maxJumpHeight);
         }
     }
  //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
