@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class WalkController : MonoBehaviour
 {
+    // fix this problem
     private Rigidbody m_rigidBody;
     private CapsuleCollider m_capsuleCollider;
     private Vector3 velocity = Vector3.zero;
