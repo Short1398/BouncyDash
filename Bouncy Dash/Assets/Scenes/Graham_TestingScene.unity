@@ -368,7 +368,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffaf78628c8e7fe49a2fd2724c31f6cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_walkAcceleration: 5
+  m_walkAcceleration: 4
   m_maxWalkSpeed: 4
   m_dashSpeed: 10
   m_dashDuration: 0.15
@@ -525,7 +525,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 6
+  orthographic size: 4
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
