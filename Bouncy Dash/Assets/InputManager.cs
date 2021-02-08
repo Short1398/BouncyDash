@@ -5,7 +5,7 @@ using UnityEngine;
 public class InputManager : MonoBehaviour
 {
     const string HORIZONTALMOV = "Horizontal";
-    const string JUMP_BUTTON = "Vertical";
+    const string JUMP_BUTTON = "CustomJump";
 
     public static Vector2 GetMovementInput()
     {
