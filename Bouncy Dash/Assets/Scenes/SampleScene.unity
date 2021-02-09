@@ -742,6 +742,11 @@ PrefabInstance:
       propertyPath: m_rotateSpeedInDeg
       value: 60
       objectReference: {fileID: 0}
+    - target: {fileID: -7842236328824199825, guid: 6aa14e80d701d56449252b25811a0678,
+        type: 3}
+      propertyPath: m_bulletSpeed
+      value: 32
+      objectReference: {fileID: 0}
     - target: {fileID: 7926719630764326445, guid: 6aa14e80d701d56449252b25811a0678,
         type: 3}
       propertyPath: m_Name
