@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class Enemy_Base : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    protected enum EnemyTypes
     {
-        
+        TURRET, 
+        GRUNT
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    [SerializeField]
+    protected EnemyTypes m_enemyType;
+    [Header("Damage")]
+    [SerializeField]
+    protected float damageDealt;
+
+    protected const string PLAYER_TAG = "Player";
 }
