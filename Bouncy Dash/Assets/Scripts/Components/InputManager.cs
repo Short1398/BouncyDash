@@ -5,8 +5,14 @@ using UnityEngine;
 public class InputManager : MonoBehaviour
 {
     const string HORIZONTALMOV = "Horizontal";
-    const string JUMP_BUTTON = "CustomJump";
+    const string JUMP_BUTTON = "Jump";
+    const string SWAP_BUTTON = "Swap";
+    const string DASH_BUTTON = "Dash";
 
+    public static float GetAxisDeadZone(string axis)
+    {
+        return Input.GetAxisRaw(axis);
+    }
     public static Vector2 GetMovementInput()
     {
         float horizontalMov = Input.GetAxisRaw(HORIZONTALMOV);
@@ -19,8 +25,9 @@ public class InputManager : MonoBehaviour
         return Input.GetButton(HORIZONTALMOV);
     }
 
-    public static bool WasJumpPressed()
+    public static bool WasJumpPressed(bool released = true)
     {
+        if (!released) { return Input.GetButtonDown(JUMP_BUTTON); }
         return Input.GetButtonUp(JUMP_BUTTON);
     }
 
@@ -28,4 +35,8 @@ public class InputManager : MonoBehaviour
     {
         return Input.GetButton(JUMP_BUTTON);
     }
+
+    public static bool DashPressed() { return Input.GetButtonDown(DASH_BUTTON); }
+    public static bool SwapPressed() { return Input.GetButtonDown(SWAP_BUTTON); }
+
 }

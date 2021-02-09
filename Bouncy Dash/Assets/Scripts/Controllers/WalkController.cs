@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WalkController : MonoBehaviour
+[RequireComponent(typeof(BouncyController))]
+public class WalkController : PlayerController_Base
 {
+    BouncyController m_bc;
     //Solve this conflict
-    private Rigidbody m_rigidBody;
-    private CapsuleCollider m_capsuleCollider;
+    private Rigidbody2D m_rigidBody;
+    private CapsuleCollider2D m_capsuleCollider;
     private Vector3 velocity = Vector3.zero;
     private float facing = 1;
     private bool grounded = false;
@@ -36,24 +38,32 @@ public class WalkController : MonoBehaviour
 
     private void Awake()
     {
-        m_capsuleCollider = gameObject.GetComponent<CapsuleCollider>();
-        m_rigidBody = gameObject.GetComponent<Rigidbody>();
+        //m_capsuleCollider = gameObject.GetComponent<CapsuleCollider>();
+        m_capsuleCollider = gameObject.GetComponent<CapsuleCollider2D>();
+        m_rigidBody = gameObject.GetComponent<Rigidbody2D>();
+        m_bc = gameObject.GetComponent<BouncyController>();
+
+        m_bc.enabled = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        m_capsuleCollider.isTrigger = false;
+        CheckSwapStatus(this, m_bc);
+
         // Gravity & Jump
         grounded = false;
-        if (Physics.Raycast(transform.position, -transform.up, m_capsuleCollider.height / 2 + 0.1f)) {
+        if (Physics2D.Raycast(transform.position, -transform.up, m_capsuleCollider.size.y / 2 + 0.1f, LayerMask.GetMask("Obstacle"))) {
             grounded = true;
+            velocity.y = 0;
         }
-        if (Input.GetKeyDown(KeyCode.Z) && grounded && !dashing) {
+        if (InputManager.WasJumpPressed(false) && grounded && !dashing) {
             velocity.y += m_jumpForce;
             grounded = false;
             jumping = true;
         }
-        if (!Input.GetKey(KeyCode.Z)) {
+        if (!InputManager.WasJumpPressed(false)) {
             jumping = false;
         }
         if (!grounded && !dashing) {
@@ -66,10 +76,10 @@ public class WalkController : MonoBehaviour
         }
 
         // Horizontal Movement
-        if (m_deadZone < Mathf.Abs(Input.GetAxis("Horizontal")) && !dashing)
+        if (m_deadZone < Mathf.Abs(InputManager.GetAxisDeadZone(HORIZONTALMOV)) && !dashing)
         {
-            velocity.x = Mathf.Clamp(velocity.x + Mathf.Sign(Input.GetAxis("Horizontal")) * m_walkAcceleration, -m_maxWalkSpeed, m_maxWalkSpeed);
-            facing = Mathf.Sign(Input.GetAxis("Horizontal"));
+            velocity.x = Mathf.Clamp(velocity.x + Mathf.Sign(InputManager.GetAxisDeadZone(HORIZONTALMOV)) * m_walkAcceleration, -m_maxWalkSpeed, m_maxWalkSpeed);
+            facing = Mathf.Sign(InputManager.GetAxisDeadZone(HORIZONTALMOV));
         }
         else if (m_deceleration <= Mathf.Abs(velocity.x)) {
             velocity.x -= Mathf.Sign(velocity.x) * m_deceleration;
@@ -78,22 +88,21 @@ public class WalkController : MonoBehaviour
         }
 
         //Dash control
-        if (Input.GetKeyDown(KeyCode.C)) {
+        if (InputManager.DashPressed()) {
             dashing = true;
             StartCoroutine(Dash());
         }
 
         // Nullifying velocity when colliding with objects (stops player from sticking to walls, being able to jump around ceilings, etc.)
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, Mathf.Sign(velocity.x) * transform.right, out hit, m_capsuleCollider.radius + 0.1f)) {
+        if (Physics.Raycast(transform.position, Mathf.Sign(velocity.x) * transform.right, out hit, m_capsuleCollider.size.magnitude + 0.1f)) {
             velocity.x = 0;
         }
-        if (Physics.Raycast(transform.position, Mathf.Sign(velocity.y) * transform.up, m_capsuleCollider.height / 2 + 0.1f)) {
+        if (Physics.Raycast(transform.position, Mathf.Sign(velocity.y) * transform.up, m_capsuleCollider.size.y / 2 + 0.1f)) {
             velocity.y = 0;
         }
 
-        // Applying velocity to Rigidbody
-        m_rigidBody.velocity = velocity;
+        
 
         IEnumerator Dash()
         {
@@ -108,5 +117,20 @@ public class WalkController : MonoBehaviour
             }
             dashing = false;
         }
+
+        transform.Translate(velocity * Time.deltaTime);
     }
+
+
+    //private void FixedUpdate()
+    //{
+    //    transform.position = m_rigidBody.position;
+    //    // Applying velocity to Rigidbody
+    //    m_rigidBody.velocity = velocity;
+    //}
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawLine(transform.position, transform.position + (-transform.up * m_capsuleCollider.size.magnitude));
+    //}
 }
