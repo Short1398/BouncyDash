@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BouncyController : MonoBehaviour
+public class BouncyController : PlayerController_Base
 {
     Vector2 m_currentVelocity = new Vector2(1,1);
     Vector2 m_lastInputDirection;
@@ -15,6 +15,8 @@ public class BouncyController : MonoBehaviour
 
     //Components
     Rigidbody2D m_rb;
+    WalkController m_wc;
+    CapsuleCollider2D m_capsuleCollider;
 
     //Jump properties
     float m_minJumpheight = 6f;
@@ -72,7 +74,7 @@ public class BouncyController : MonoBehaviour
         CHAINED_ATTACK
     }
 
-    BouncyState m_CurrentState;
+    BouncyState m_CurrentState = BouncyState.FREE_ROAMING;
 
 
     int collisionCounter = 0;
@@ -80,6 +82,8 @@ public class BouncyController : MonoBehaviour
     void Start()
     {
         m_rb = GetComponent<Rigidbody2D>();
+        m_wc = GetComponent<WalkController>();
+        m_capsuleCollider = GetComponent<CapsuleCollider2D>();
 
         m_CurrentState = BouncyState.FREE_ROAMING;
 
@@ -90,6 +94,8 @@ public class BouncyController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        m_capsuleCollider.isTrigger = true;
+        CheckSwapStatus(this, m_wc);
         SetSensors();
 
         m_currentHorizontalSpeed = Mathf.Clamp(m_currentHorizontalSpeed, 0, m_maxHorizontalSpeed);
@@ -97,7 +103,9 @@ public class BouncyController : MonoBehaviour
 
         if (m_CurrentState == BouncyState.FREE_ROAMING)
         {
-            ApplyGravityIfNotGrounded();
+            RaycastHit2D groundHit = Physics2D.Raycast(transform.position, -transform.up, m_capsuleCollider.size.y / 2 + 0.1f, LayerMask.GetMask("Obstacle"));
+            m_grounded = groundHit;
+            if (!groundHit) { ApplyGravityIfNotGrounded(); }
             CheckJumpStatus();
             CheckPlayerHorizontalInput();
         }
@@ -136,7 +144,7 @@ public class BouncyController : MonoBehaviour
         {
             if (m_rb.velocity.y < 0 && m_sensors.DSensor)
             {
-                m_grounded = true;
+                //m_grounded = true;
 
                 m_lastPositionAfterHittinGround = m_rb.position;
             }
@@ -150,7 +158,7 @@ public class BouncyController : MonoBehaviour
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (m_grounded && m_currentVerticalSpeed > 0) { m_grounded = false; }
+        //if (m_grounded && m_currentVerticalSpeed > 0) { m_grounded = false; }
     }
  //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -254,6 +262,7 @@ public class BouncyController : MonoBehaviour
 
     private void CheckPlayerHorizontalInput()
     {
+        Debug.Log(m_currentVelocity);
         if (IsQuickturning())
         {
             float quickTurnRate = (m_maxHorizontalSpeed / m_timetoReachMaxSpeedFromInput ) * Time.deltaTime;
