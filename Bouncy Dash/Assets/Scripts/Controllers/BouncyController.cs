@@ -134,25 +134,30 @@ public class BouncyController : PlayerController_Base
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.GetComponent<Enemy_Base>())
+        if(m_rb)
         {
-            Destroy(collision.gameObject);
-            CheckEnemyRadar();
-        }
-        
-        if (m_CurrentState == BouncyState.FREE_ROAMING)
-        {
-            if (m_rb.velocity.y < 0 && m_sensors.DSensor)
+            if (collision.GetComponent<Enemy_Base>())
             {
-                //m_grounded = true;
-
-                m_lastPositionAfterHittinGround = m_rb.position;
+                Destroy(collision.gameObject);
+                CheckEnemyRadar();
             }
-            ReactToBorders();
-            collisionCounter++;
-            //Debug.Log("Collision #: " + collisionCounter);
-            //Debug.Log(collision.gameObject.name);
-        } 
+
+            if (m_CurrentState == BouncyState.FREE_ROAMING)
+            {
+                if (m_rb.velocity.y < 0 && m_sensors.DSensor)
+                {
+                    //m_grounded = true;
+
+                    m_lastPositionAfterHittinGround = m_rb.position;
+                }
+                ReactToBorders();
+                collisionCounter++;
+                //Debug.Log("Collision #: " + collisionCounter);
+                //Debug.Log(collision.gameObject.name);
+            }
+
+
+        }
 
 
     }

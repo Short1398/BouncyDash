@@ -261,3 +261,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 903240b5c62c4354eb5b058635145713, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_enemyType: 0
+  damageDealt: 0
+  m_minDistanceToPlayer: 5
+  m_rotateSpeedInDeg: 60
+  m_tipOfBarrel: {fileID: 2649803373464599068}
+  m_bulletPrefab: {fileID: 2655759483351608276, guid: d6e4893dbeac61b40bba66124c83abb7,
+    type: 3}
+  m_fireRate: 1.5
+  m_bulletSpeed: 10
