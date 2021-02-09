@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class PlayerController_Base : MonoBehaviour
 {
-    //this is for conflict
+
+    // yup
+
    protected const string HORIZONTALMOV = "Horizontal";
    protected const string JUMP_BUTTON = "Jump";
    protected const string SWAP_BUTTON = "Swap";
