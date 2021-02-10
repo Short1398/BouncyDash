@@ -76,7 +76,7 @@ public class BouncyController : PlayerController_Base
 
     BouncyState m_CurrentState = BouncyState.FREE_ROAMING;
 
-
+    SpriteRenderer sr;
     int collisionCounter = 0;
     // Start is called before the first frame update
     void Start()
@@ -84,6 +84,8 @@ public class BouncyController : PlayerController_Base
         m_rb = GetComponent<Rigidbody2D>();
         m_wc = GetComponent<WalkController>();
         m_capsuleCollider = GetComponent<CapsuleCollider2D>();
+        a = GetComponentInChildren<Animator>();
+        sr = GetComponentInChildren<SpriteRenderer>();
 
         m_CurrentState = BouncyState.FREE_ROAMING;
 
@@ -96,6 +98,14 @@ public class BouncyController : PlayerController_Base
     {
         m_capsuleCollider.isTrigger = true;
         CheckSwapStatus(this, m_wc);
+        
+
+        //this isn't the best way to do this but the script swapping makes it awkward
+        if (a.GetBool("ballMode")==false)
+        {
+            a.SetBool("ballMode", true);
+        }
+
         SetSensors();
 
         m_currentHorizontalSpeed = Mathf.Clamp(m_currentHorizontalSpeed, 0, m_maxHorizontalSpeed);

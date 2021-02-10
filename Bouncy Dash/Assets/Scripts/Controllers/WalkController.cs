@@ -36,12 +36,16 @@ public class WalkController : PlayerController_Base
     [SerializeField]
     private float m_deadZone;
 
+    SpriteRenderer sr;
+
     private void Awake()
     {
         //m_capsuleCollider = gameObject.GetComponent<CapsuleCollider>();
         m_capsuleCollider = gameObject.GetComponent<CapsuleCollider2D>();
         m_rigidBody = gameObject.GetComponent<Rigidbody2D>();
         m_bc = gameObject.GetComponent<BouncyController>();
+        a = GetComponentInChildren<Animator>();
+        sr = GetComponentInChildren<SpriteRenderer>();
 
         m_bc.enabled = false;
     }
@@ -49,6 +53,29 @@ public class WalkController : PlayerController_Base
     // Update is called once per frame
     void Update()
     {
+        //Animation
+
+        a.SetFloat("speed", Mathf.Abs(velocity.x));
+
+        if (InputManager.PressingMovementInput())
+        {
+            if (velocity.x > 0)
+            {
+                sr.flipX = true;
+            }
+            else
+            {
+                sr.flipX = false;
+            }
+        }
+
+
+        //(this isn't the best way to do this but the script swapping makes it awkward)
+        if (a.GetBool("ballMode"))
+        {
+            a.SetBool("ballMode", false);
+        }
+
         m_capsuleCollider.isTrigger = false;
         CheckSwapStatus(this, m_bc);
 
@@ -101,8 +128,6 @@ public class WalkController : PlayerController_Base
         if (Physics.Raycast(transform.position, Mathf.Sign(velocity.y) * transform.up, m_capsuleCollider.size.y / 2 + 0.1f)) {
             velocity.y = 0;
         }
-
-        
 
         IEnumerator Dash()
         {
