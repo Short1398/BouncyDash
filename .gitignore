@@ -48,6 +48,6 @@ sysinfo.txt
 Assets/StreamingAssets/crashlytics-build.properties
 
 # Animations
-#Bouncy Dash/Assets/Animations/
+Bouncy Dash/Assets/Animations/
 
 # End of https://www.gitignore.io/api/unity
