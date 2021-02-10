@@ -11,7 +11,7 @@ public class BouncyController : PlayerController_Base
     Vector2 m_currentVerticallVelocity;
 
     float m_currentHorizontalSpeed = 0;
-    float m_maxHorizontalSpeed = 10f;
+    [SerializeField] float m_maxHorizontalSpeed = 10f;
 
     //Components
     Rigidbody2D m_rb;
@@ -19,22 +19,22 @@ public class BouncyController : PlayerController_Base
     CapsuleCollider2D m_capsuleCollider;
 
     //Jump properties
-    float m_minJumpheight = 6f;
-    float m_maxJumpScalar = 1.5f;
-    float m_timeToReachApex = 1f;
-    float m_jumpChargeTime = 2f;
+    [SerializeField]float m_minJumpheight = 6f;
+    [SerializeField] float m_maxJumpScalar = 1.5f;
+    [SerializeField] float m_timeToReachApex = 1f;
+    [SerializeField] float m_jumpChargeTime = 2f;
     float m_currentJumpHeight;
     float m_maxJumpHeight;//Will be initialized during Start()
 
     //Horizontal force properties
-    float m_timetoReachMaxSpeedFromInput = 4f;
+    [SerializeField] float m_timetoReachMaxSpeedFromInput = 4f;
     //Quick turn
 
     //Gravity properties
-    float m_gravityScalar = 1f;
-    float m_timeToReachTerminalVelocity = 1f;
-    float m_terminalVelocity = 22f;
-    float m_currentVerticalSpeed;
+    [SerializeField] float m_gravityScalar = 1f;
+    [SerializeField] float m_timeToReachTerminalVelocity = 1f;
+    [SerializeField] float m_terminalVelocity = 22f;
+    [SerializeField] float m_currentVerticalSpeed;
 
     bool m_grounded = false;
     bool m_bounceless = false;
@@ -77,6 +77,8 @@ public class BouncyController : PlayerController_Base
     BouncyState m_CurrentState = BouncyState.FREE_ROAMING;
 
     SpriteRenderer sr;
+    ParticleSystem ps;
+    ValueBar vb;
     int collisionCounter = 0;
     // Start is called before the first frame update
     void Start()
@@ -86,6 +88,8 @@ public class BouncyController : PlayerController_Base
         m_capsuleCollider = GetComponent<CapsuleCollider2D>();
         a = GetComponentInChildren<Animator>();
         sr = GetComponentInChildren<SpriteRenderer>();
+        ps = GetComponentInChildren<ParticleSystem>();
+        vb = GetComponentInChildren<ValueBar>();
 
         m_CurrentState = BouncyState.FREE_ROAMING;
 
@@ -254,7 +258,10 @@ public class BouncyController : PlayerController_Base
         //Check if there is a valid path to closest enemy
         if(closestValidEnemy != null) { BounceTowardsEnemyInRadar(closestValidEnemy); }
     }
-//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    
+
 
     private void CheckJumpStatus()
     {
@@ -271,13 +278,30 @@ public class BouncyController : PlayerController_Base
             m_currentJumpHeight += jumpAcc;
 
             m_currentJumpHeight = Mathf.Clamp(m_currentJumpHeight, m_minJumpheight, m_maxJumpHeight);
+
+           
+
+            if (m_currentJumpHeight == m_maxJumpHeight && ps.isEmitting == false)
+            {
+                ps.Play();
+            }
+            else
+            {
+                vb.Display(m_currentJumpHeight / m_maxJumpHeight);
+            }
         }
+        else
+        {
+            ps.Stop();
+            vb.Hide();
+        }
+
     }
  //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     private void CheckPlayerHorizontalInput()
     {
-        Debug.Log(m_currentVelocity);
+        //Debug.Log(m_currentVelocity);
         if (IsQuickturning())
         {
             float quickTurnRate = (m_maxHorizontalSpeed / m_timetoReachMaxSpeedFromInput ) * Time.deltaTime;
@@ -360,4 +384,5 @@ public class BouncyController : PlayerController_Base
         
 
     }
+
 }

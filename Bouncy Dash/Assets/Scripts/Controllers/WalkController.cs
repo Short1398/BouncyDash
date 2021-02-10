@@ -54,7 +54,7 @@ public class WalkController : PlayerController_Base
     void Update()
     {
         //Animation
-
+        
         a.SetFloat("speed", Mathf.Abs(velocity.x));
 
         if (InputManager.PressingMovementInput())
@@ -68,17 +68,17 @@ public class WalkController : PlayerController_Base
                 sr.flipX = false;
             }
         }
-
+        
 
         //(this isn't the best way to do this but the script swapping makes it awkward)
         if (a.GetBool("ballMode"))
         {
             a.SetBool("ballMode", false);
         }
-
+        
         m_capsuleCollider.isTrigger = false;
         CheckSwapStatus(this, m_bc);
-
+        
         // Gravity & Jump
         grounded = false;
         if (Physics2D.Raycast(transform.position, -transform.up, m_capsuleCollider.size.y / 2 + 0.1f, LayerMask.GetMask("Obstacle"))) {

@@ -24,12 +24,12 @@ public class PlayerController_Base : MonoBehaviour
     {
         if (InputManager.SwapPressed() && Time.time > m_swapHandler)
         {
+            Rigidbody2D brb = b.GetComponent<Rigidbody2D>();
+            brb.velocity = new Vector2(0, brb.velocity.y);
+            
             Game_Manager.SwapControllers(a, b);
             m_swapHandler = Time.time + m_swapCooldown;
+            
         }
-
-        Rigidbody2D brb = b.GetComponent<Rigidbody2D>();
-
-        brb.velocity = new Vector2(0, brb.velocity.y);
     }
 }
