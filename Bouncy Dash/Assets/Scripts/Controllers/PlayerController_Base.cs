@@ -18,12 +18,35 @@ public class PlayerController_Base : MonoBehaviour
     //Swapping properties
     protected float m_swapCooldown = 1f;
     protected float m_swapHandler;
-    
+    protected Vector2 m_previousVelocityBeforeSwap;
+
+    protected class VelocityRef
+    {
+        public Vector2 CurrentVelocity;
+    }
+
+    protected VelocityRef m_velocityReference;
+
+    protected bool m_Grounded;
 
     protected void CheckSwapStatus(PlayerController_Base a, PlayerController_Base b)
     {
         if (InputManager.SwapPressed() && Time.time > m_swapHandler)
         {
+            if (a.gameObject.GetComponent<WalkController>().isActiveAndEnabled)
+            {
+                WalkController controllerRef = a.gameObject.GetComponent<WalkController>();
+               controllerRef.ResetVelocity();
+            }
+            else if (a.gameObject.GetComponent<BouncyController>().isActiveAndEnabled)
+            {
+                BouncyController controllerRef = a.gameObject.GetComponent<BouncyController>();
+                controllerRef.ResetVelocity();
+            }
+
+
+
+
             Rigidbody2D brb = b.GetComponent<Rigidbody2D>();
             brb.velocity = new Vector2(0, brb.velocity.y);
             
@@ -32,4 +55,7 @@ public class PlayerController_Base : MonoBehaviour
             
         }
     }
+
+   protected virtual bool IsGrounded() { return true; }
+   protected virtual void ResetVelocity() { }
 }

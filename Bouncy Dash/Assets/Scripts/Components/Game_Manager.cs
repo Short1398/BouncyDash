@@ -9,6 +9,6 @@ public class Game_Manager : MonoBehaviour
         a.enabled = false;
         b.enabled = true;
 
-        Debug.Log("Swapped");
+        //Debug.Log("Swapped");
     }
 }
