@@ -275,6 +275,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7533f39db35fbd14cafb5705f8ed4a7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_maxHorizontalSpeed: 20
+  m_minJumpheight: 6
+  m_maxJumpScalar: 1.5
+  m_timeToReachApex: 1
+  m_jumpChargeTime: 2
+  m_timetoReachMaxSpeedFromInput: 4
+  m_gravityScalar: 1
+  m_timeToReachTerminalVelocity: 1
+  m_terminalVelocity: 22
+  m_currentVerticalSpeed: 0
 --- !u!1 &196831318
 GameObject:
   m_ObjectHideFlags: 0
