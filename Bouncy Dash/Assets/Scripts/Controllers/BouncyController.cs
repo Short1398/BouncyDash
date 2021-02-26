@@ -6,9 +6,11 @@ public class BouncyController : PlayerController_Base
 {
     Vector2 m_currentVelocity = new Vector2(1,1);
     Vector2 m_lastInputDirection;
-    Vector2 m_lastPositionAfterHittinGround;
+    Vector2 m_lastPositionAfterHittinGround = Vector2.zero;
     Vector2 m_currentHorizontalVelocity;
     Vector2 m_currentVerticallVelocity;
+
+    Vector2 m_StunnedDirection;
 
     float m_currentHorizontalSpeed = 0;
     [SerializeField] float m_maxHorizontalSpeed = 10f;
@@ -19,6 +21,7 @@ public class BouncyController : PlayerController_Base
     CapsuleCollider2D m_capsuleCollider;
 
     //Jump properties
+    [Header("Jump")]
     [SerializeField]float m_minJumpheight = 6f;
     [SerializeField] float m_maxJumpScalar = 1.5f;
     [SerializeField] float m_timeToReachApex = 1f;
@@ -27,14 +30,24 @@ public class BouncyController : PlayerController_Base
     float m_maxJumpHeight;//Will be initialized during Start()
 
     //Horizontal force properties
+    [Header("Horizontal Input")]
     [SerializeField] float m_timetoReachMaxSpeedFromInput = 4f;
     //Quick turn
 
     //Gravity properties
+    [Header("Gravity")]
     [SerializeField] float m_gravityScalar = 1f;
     [SerializeField] float m_timeToReachTerminalVelocity = 1f;
     [SerializeField] float m_terminalVelocity = 22f;
     [SerializeField] float m_currentVerticalSpeed;
+
+    [Header("Stunned")]
+    [Range(0.3f, 1.5f)]
+    [SerializeField]
+    private float m_stunnedTime = 1f;
+    [SerializeField]
+    private float m_pushBackForce;
+    float m_stunTimerHandler;
 
     bool m_grounded = false;
     bool m_bounceless = false;
@@ -60,7 +73,7 @@ public class BouncyController : PlayerController_Base
     }
 
     ActiveSensors m_sensors;
-    float m_minSensorLength = 0.75f;
+    float m_minSensorLength = 2f;
     float m_rbVelocityPercetange = 0.25f;
 
     //Layers or axis
@@ -71,7 +84,8 @@ public class BouncyController : PlayerController_Base
     enum BouncyState
     {
         FREE_ROAMING,
-        CHAINED_ATTACK
+        CHAINED_ATTACK,
+        STUNNED
     }
 
     BouncyState m_CurrentState = BouncyState.FREE_ROAMING;
@@ -117,13 +131,17 @@ public class BouncyController : PlayerController_Base
 
         if (m_CurrentState == BouncyState.FREE_ROAMING)
         {
-            RaycastHit2D groundHit = Physics2D.Raycast(transform.position, -transform.up, m_capsuleCollider.size.y / 2 + 0.1f, LayerMask.GetMask("Obstacle"));
-            m_grounded = groundHit;
-            if (!groundHit) { ApplyGravityIfNotGrounded(); }
-            CheckJumpStatus();
             CheckPlayerHorizontalInput();
         }
 
+        if (Time.time > m_stunTimerHandler && m_CurrentState == BouncyState.STUNNED)
+        {
+            m_CurrentState = BouncyState.FREE_ROAMING;
+        }
+        RaycastHit2D groundHit = Physics2D.Raycast(transform.position, -transform.up, m_capsuleCollider.size.y / 2 + 0.3f, LayerMask.GetMask(OBSTACLE));
+        m_grounded = groundHit;
+        ApplyGravityIfNotGrounded();
+        CheckJumpStatus();
     }
 
     private void FixedUpdate()
@@ -136,9 +154,13 @@ public class BouncyController : PlayerController_Base
             m_currentVerticallVelocity = new Vector2(0, m_currentVerticalSpeed);
             m_currentVelocity = m_currentHorizontalVelocity + m_currentVerticallVelocity;
         }
-        else
+        else if (m_CurrentState == BouncyState.CHAINED_ATTACK)
         {
             m_currentVelocity = m_currentVelocity.normalized * (m_currentHorizontalSpeed + Mathf.Abs(m_currentVerticalSpeed));
+        }
+        else if (m_CurrentState == BouncyState.STUNNED)
+        {
+            m_currentVelocity = new Vector2(0, m_currentVerticalSpeed);
         }
            
 
@@ -150,27 +172,48 @@ public class BouncyController : PlayerController_Base
     {
         if(m_rb)
         {
-            if (collision.GetComponent<Enemy_Base>())
-            {
-                Destroy(collision.gameObject);
-                CheckEnemyRadar();
-            }
+            //if (collision.GetComponent<Enemy_Base>())
+            //{
+            //    Destroy(collision.gameObject);
+            //    CheckEnemyRadar();
+            //}
 
-            if (m_CurrentState == BouncyState.FREE_ROAMING)
+            //if (m_CurrentState == BouncyState.FREE_ROAMING)
+            //{
+            //    if (m_rb.velocity.y < 0 && m_sensors.DSensor)
+            //    {
+            //        //m_grounded = true;
+
+            //        m_lastPositionAfterHittinGround = m_rb.position;
+            //    }
+            //    ReactToBorders();
+            //    collisionCounter++;
+            //    //Debug.Log("Collision #: " + collisionCounter);
+            //    //Debug.Log(collision.gameObject.name);
+            //}
+
+            if (collision.GetComponent<Enemy_Base>() || collision.tag == OBSTACLE || collision.gameObject.layer == LayerMask.NameToLayer(OBSTACLE))
             {
+
                 if (m_rb.velocity.y < 0 && m_sensors.DSensor)
                 {
                     //m_grounded = true;
 
                     m_lastPositionAfterHittinGround = m_rb.position;
                 }
-                ReactToBorders();
+                bool hitEnemy = collision.GetComponent<Enemy_Base>();
+                if (hitEnemy) { Destroy(collision.gameObject); }
+                ReactToBorders(hitEnemy);
                 collisionCounter++;
-                //Debug.Log("Collision #: " + collisionCounter);
-                //Debug.Log(collision.gameObject.name);
+              
             }
-
-
+            else if (collision.gameObject.layer == LayerMask.NameToLayer(THREAT) && m_CurrentState != BouncyState.STUNNED)
+            {
+                //TODO take damage
+                m_CurrentState = BouncyState.STUNNED;
+                m_currentHorizontalSpeed = 0;
+                m_stunTimerHandler = Time.time + m_stunnedTime;
+            }
         }
 
 
@@ -191,14 +234,16 @@ public class BouncyController : PlayerController_Base
             m_currentVerticalSpeed -= gravityAccRate;
             m_bounceless = false;
         }
-        else if(m_grounded && Mathf.Abs(m_currentVerticalSpeed) < gravityAccRate)
+
+        if (Mathf.Abs(m_currentVerticalSpeed) < gravityAccRate * 10f && m_grounded && m_lastPositionAfterHittinGround != Vector2.zero)
         {
+            m_grounded = true;
             m_bounceless = true;
             m_currentVerticalSpeed = 0;
 
             if (m_bounceless)
             {
-                m_rb.position = new Vector2(m_rb.position.x, m_lastPositionAfterHittinGround.y + 0.09f);
+                m_rb.position = new Vector2(m_rb.position.x, m_lastPositionAfterHittinGround.y + 0.15f);
             }
             //Reset handler
             m_groundBufferHandler = Time.time + m_groundBufferTime;
@@ -322,23 +367,23 @@ public class BouncyController : PlayerController_Base
     {
         return InputManager.PressingMovementInput() && m_lastInputDirection != InputManager.GetMovementInput() && m_currentHorizontalSpeed > 0;
     }
- //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    private void ReactToBorders()
+    private void ReactToBorders(bool hitENemy = false)
     {
         if (!m_bounceless)
         {
             if (m_sensors.USensor || m_sensors.DSensor)
             {
                 //Bounce a bit less everytime
-                m_currentVerticalSpeed *= -0.75f;
+                m_currentVerticalSpeed = hitENemy? m_currentVerticalSpeed * -1.5f : m_currentVerticalSpeed * -0.75f;
             }
         }
        
         if (m_sensors.RSensor || m_sensors.LSensor)
         {
-            m_currentHorizontalSpeed += 2;
-            m_lastInputDirection *= -1;
+            m_currentHorizontalSpeed = hitENemy ? m_currentHorizontalSpeed += 2 : m_currentHorizontalSpeed;
+            m_lastInputDirection.x *= -1;
         }
     }
  //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -349,24 +394,24 @@ public class BouncyController : PlayerController_Base
     //}
     private void SetSensors()
     {
-        //m_sensors.USensor = Physics2D.Raycast(transform.position, transform.up, m_sensorLength, LayerMask.GetMask(OBSTACLE));
-        //m_sensors.URSensor = Physics2D.Raycast(transform.position, (transform.up + transform.right).normalized, m_sensorLength, LayerMask.GetMask(OBSTACLE));
-        //m_sensors.RSensor = Physics2D.Raycast(transform.position, transform.right, m_sensorLength, LayerMask.GetMask(OBSTACLE));
-        //m_sensors.RDSensor = Physics2D.Raycast(transform.position, (-transform.up + transform.right).normalized, m_sensorLength, LayerMask.GetMask(OBSTACLE));
-        //m_sensors.DSensor = Physics2D.Raycast(transform.position, -transform.up, m_sensorLength, LayerMask.GetMask(OBSTACLE));
-        //m_sensors.DLSensor = Physics2D.Raycast(transform.position, (-transform.up + -transform.right).normalized, m_sensorLength, LayerMask.GetMask(OBSTACLE));
-        //m_sensors.LSensor = Physics2D.Raycast(transform.position, -transform.right, m_sensorLength, LayerMask.GetMask(OBSTACLE));
-        //m_sensors.LUSensor = Physics2D.Raycast(transform.position, (transform.up + -transform.right).normalized, m_sensorLength, LayerMask.GetMask(OBSTACLE));
-        float sensorLength = m_rb.velocity.magnitude * m_rbVelocityPercetange;
-        sensorLength = Mathf.Clamp(sensorLength, m_minSensorLength, m_minSensorLength + sensorLength);
-        m_sensors.USensor = Physics2D.Raycast(transform.position, transform.up, sensorLength, LayerMask.GetMask(OBSTACLE));
+        m_sensors.USensor = Physics2D.Raycast(transform.position, transform.up, m_minSensorLength, LayerMask.GetMask(OBSTACLE, THREAT));
         m_sensors.URSensor = Physics2D.Raycast(transform.position, (transform.up + transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
-        m_sensors.RSensor = Physics2D.Raycast(transform.position, transform.right, sensorLength, LayerMask.GetMask(OBSTACLE));
-        m_sensors.RDSensor = Physics2D.Raycast(transform.position, (-transform.up + transform.right).normalized,sensorLength, LayerMask.GetMask(OBSTACLE));
-        m_sensors.DSensor = Physics2D.Raycast(transform.position, -transform.up,sensorLength, LayerMask.GetMask(OBSTACLE));
-        m_sensors.DLSensor = Physics2D.Raycast(transform.position, (-transform.up + -transform.right).normalized,sensorLength, LayerMask.GetMask(OBSTACLE));
-        m_sensors.LSensor = Physics2D.Raycast(transform.position, -transform.right,sensorLength, LayerMask.GetMask(OBSTACLE));
-        m_sensors.LUSensor = Physics2D.Raycast(transform.position, (transform.up + -transform.right).normalized, sensorLength, LayerMask.GetMask(OBSTACLE));
+        m_sensors.RSensor = Physics2D.Raycast(transform.position, transform.right, m_minSensorLength, LayerMask.GetMask(OBSTACLE, THREAT));
+        m_sensors.RDSensor = Physics2D.Raycast(transform.position, (-transform.up + transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
+        m_sensors.DSensor = Physics2D.Raycast(transform.position, -transform.up, m_rb.velocity.magnitude, LayerMask.GetMask(OBSTACLE, THREAT));
+        m_sensors.DLSensor = Physics2D.Raycast(transform.position, (-transform.up + -transform.right).normalized,m_minSensorLength, LayerMask.GetMask(OBSTACLE));
+        m_sensors.LSensor = Physics2D.Raycast(transform.position, -transform.right, m_minSensorLength, LayerMask.GetMask(OBSTACLE, THREAT));
+        m_sensors.LUSensor = Physics2D.Raycast(transform.position, (transform.up + -transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
+        float sensorLength = m_rb.velocity.magnitude * m_rbVelocityPercetange;
+        //sensorLength = Mathf.Clamp(sensorLength, m_minSensorLength, m_minSensorLength + sensorLength);
+        //m_sensors.USensor = Physics2D.Raycast(transform.position, transform.up, sensorLength, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.URSensor = Physics2D.Raycast(transform.position, (transform.up + transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.RSensor = Physics2D.Raycast(transform.position, transform.right, sensorLength, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.RDSensor = Physics2D.Raycast(transform.position, (-transform.up + transform.right).normalized,sensorLength, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.DSensor = Physics2D.Raycast(transform.position, -transform.up,sensorLength, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.DLSensor = Physics2D.Raycast(transform.position, (-transform.up + -transform.right).normalized,sensorLength, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.LSensor = Physics2D.Raycast(transform.position, -transform.right,sensorLength, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.LUSensor = Physics2D.Raycast(transform.position, (transform.up + -transform.right).normalized, sensorLength, LayerMask.GetMask(OBSTACLE));
     }
 
     private void OnDrawGizmos()
