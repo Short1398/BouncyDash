@@ -81,10 +81,7 @@ public class HornetController : Enemy_Base
 
                 m_trackers.currentWaypointsChecked = 0;
                 m_trackers.lookoutTimerHandler = Time.time + m_lookoutTime;
-
-                //Flip enemy 
-                //TODO create and play animation
-                transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                
                 return;
             }
             else if (distanceToTarget <= m_minDistanceToWaypoint)
@@ -108,6 +105,9 @@ public class HornetController : Enemy_Base
         if (Time.time > m_trackers.lookoutTimerHandler)
         {
             m_currentState = FlyingStages.FOLLOW_PATROL;
+            //Flip enemy 
+            //TODO create and play animation
+            transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
         }
     }
 }
