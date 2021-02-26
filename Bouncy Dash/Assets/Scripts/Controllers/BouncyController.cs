@@ -218,6 +218,7 @@ public class BouncyController : PlayerController_Base
                 collisionCounter++;
               
             }
+            //Did we hit anything that threatens the player?
             else if (collision.gameObject.layer == LayerMask.NameToLayer(THREAT) && m_CurrentState != BouncyState.STUNNED)
             {
                 //TODO take damage
@@ -238,6 +239,8 @@ public class BouncyController : PlayerController_Base
     private void ApplyGravityIfNotGrounded()
     {
         //TODO when happy with testing values, move initialization to start, to avoid uneccessary operations
+
+        //Constant rate of change for gravity pulling player down
         float gravityAccRate = (m_terminalVelocity / m_timeToReachTerminalVelocity) * m_gravityScalar;
         gravityAccRate *= Time.deltaTime;
         if (!m_grounded && Time.time > m_groundBufferHandler)
@@ -246,6 +249,7 @@ public class BouncyController : PlayerController_Base
             m_bounceless = false;
         }
 
+        //Stop bouncing if player is moving vertically slowly enough and player intention is to be grounded
         if (Mathf.Abs(m_currentVerticalSpeed) < gravityAccRate * 10f && m_grounded && m_lastPositionAfterHittinGround != Vector2.zero)
         {
             m_grounded = true;
@@ -321,6 +325,7 @@ public class BouncyController : PlayerController_Base
 
     private void CheckJumpStatus()
     {
+        //Jump if player is grounded and released input
         if (m_grounded && InputManager.WasJumpPressed())
         {
             //TODO Adjustable jump scalar for when jump is held and then released
@@ -376,6 +381,7 @@ public class BouncyController : PlayerController_Base
 
     private bool IsQuickturning()
     {
+        //Quick turn as long as player drastically changed direction and still has some horizontal speed being applied
         return InputManager.PressingMovementInput() && m_lastInputDirection != InputManager.GetMovementInput() && m_currentHorizontalSpeed > 0;
     }
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -384,13 +390,14 @@ public class BouncyController : PlayerController_Base
     {
         if (!m_bounceless)
         {
+            //Up or down sensor were hit
             if (m_sensors.USensor || m_sensors.DSensor)
             {
                 //Bounce a bit less everytime
                 m_currentVerticalSpeed = hitENemy? m_currentVerticalSpeed * -1.5f : m_currentVerticalSpeed * -0.75f;
             }
         }
-       
+       //Left or right sensor were hit
         if (m_sensors.RSensor || m_sensors.LSensor)
         {
             m_currentHorizontalSpeed = hitENemy ? m_currentHorizontalSpeed += 2 : m_currentHorizontalSpeed;

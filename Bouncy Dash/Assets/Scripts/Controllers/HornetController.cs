@@ -70,11 +70,12 @@ public class HornetController : Enemy_Base
 
     void FollowPatrol()
     {
-        if (m_patrolWaypoints.Length > 1)
+        if (m_patrolWaypoints.Length > 1)//As long as there are enough patrol waypoints, then patrol
         {
             Vector2 target = m_patrolWaypoints[m_trackers.currentWaypoint].position;
             float distanceToTarget = Vector2.Distance(transform.position, target);
 
+            //Is it time for the AI to stop moving between waypoints and lookout?
             if (m_trackers.currentWaypointsChecked >= m_waypointsCheckedBeforeLookout)
             {
                 m_currentState = FlyingStages.LOOKOUT;
@@ -84,6 +85,7 @@ public class HornetController : Enemy_Base
                 
                 return;
             }
+            //Reached target destination
             else if (distanceToTarget <= m_minDistanceToWaypoint)
             {
                 ++m_trackers.currentWaypointsChecked;
@@ -102,6 +104,7 @@ public class HornetController : Enemy_Base
 
     void Lookout()
     {
+        //Has the AI finished looking out? 
         if (Time.time > m_trackers.lookoutTimerHandler)
         {
             m_currentState = FlyingStages.FOLLOW_PATROL;

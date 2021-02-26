@@ -33,6 +33,8 @@ public class PlayerController_Base : MonoBehaviour
     {
         if (InputManager.SwapPressed() && Time.time > m_swapHandler)
         {
+            //Reset velocity for active player controller
+
             if (a.gameObject.GetComponent<WalkController>().isActiveAndEnabled)
             {
                 WalkController controllerRef = a.gameObject.GetComponent<WalkController>();
@@ -51,7 +53,7 @@ public class PlayerController_Base : MonoBehaviour
             brb.velocity = new Vector2(0, brb.velocity.y);
             
             Game_Manager.SwapControllers(a, b);
-            m_swapHandler = Time.time + m_swapCooldown;
+            m_swapHandler = Time.time + m_swapCooldown;//Activate swap timer
             
         }
     }
