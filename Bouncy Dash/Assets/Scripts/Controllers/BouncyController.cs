@@ -97,6 +97,7 @@ public class BouncyController : PlayerController_Base
     // Start is called before the first frame update
     void Start()
     {
+        //Get components
         m_rb = GetComponent<Rigidbody2D>();
         m_wc = GetComponent<WalkController>();
         m_capsuleCollider = GetComponent<CapsuleCollider2D>();
@@ -105,8 +106,10 @@ public class BouncyController : PlayerController_Base
         ps = GetComponentInChildren<ParticleSystem>();
         vb = GetComponentInChildren<ValueBar>();
 
+        //Set initial player state
         m_CurrentState = BouncyState.FREE_ROAMING;
 
+        //Set jump limitations
         m_maxJumpHeight = m_minJumpheight * m_maxJumpScalar;
         m_currentJumpHeight = m_minJumpheight;
     }
@@ -124,6 +127,7 @@ public class BouncyController : PlayerController_Base
             a.SetBool("ballMode", true);
         }
 
+        //Fire sensors that objext surroundings
         SetSensors();
 
         m_currentHorizontalSpeed = Mathf.Clamp(m_currentHorizontalSpeed, 0, m_maxHorizontalSpeed);
@@ -134,32 +138,39 @@ public class BouncyController : PlayerController_Base
             CheckPlayerHorizontalInput();
         }
 
+        //Is the player still stunned? 
         if (Time.time > m_stunTimerHandler && m_CurrentState == BouncyState.STUNNED)
         {
             m_CurrentState = BouncyState.FREE_ROAMING;
         }
+        //Are we currenty supposed to be grounded?
         RaycastHit2D groundHit = Physics2D.Raycast(transform.position, -transform.up, m_capsuleCollider.size.y / 2 + 0.3f, LayerMask.GetMask(OBSTACLE));
         m_grounded = groundHit;
+
         ApplyGravityIfNotGrounded();
         CheckJumpStatus();
     }
 
     private void FixedUpdate()
     {
+        //Synchronize transform with rigibody
         transform.position = m_rb.position;
 
         if (m_CurrentState == BouncyState.FREE_ROAMING)
         {
+            //Calculate velocity from force accumulated from input and jump
             m_currentHorizontalVelocity = m_lastInputDirection * m_currentHorizontalSpeed;
             m_currentVerticallVelocity = new Vector2(0, m_currentVerticalSpeed);
             m_currentVelocity = m_currentHorizontalVelocity + m_currentVerticallVelocity;
         }
         else if (m_CurrentState == BouncyState.CHAINED_ATTACK)
         {
+            //Not used atm
             m_currentVelocity = m_currentVelocity.normalized * (m_currentHorizontalSpeed + Mathf.Abs(m_currentVerticalSpeed));
         }
         else if (m_CurrentState == BouncyState.STUNNED)
         {
+            //Ignore player input as long as player is stunned
             m_currentVelocity = new Vector2(0, m_currentVerticalSpeed);
         }
            
@@ -192,13 +203,13 @@ public class BouncyController : PlayerController_Base
             //    //Debug.Log(collision.gameObject.name);
             //}
 
+            //Did we hit an enemie's weakspot or wall? 
             if (collision.GetComponent<Enemy_Base>() || collision.tag == OBSTACLE || collision.gameObject.layer == LayerMask.NameToLayer(OBSTACLE))
             {
 
                 if (m_rb.velocity.y < 0 && m_sensors.DSensor)
                 {
-                    //m_grounded = true;
-
+                    //Record the last position when hitting the ground
                     m_lastPositionAfterHittinGround = m_rb.position;
                 }
                 bool hitEnemy = collision.GetComponent<Enemy_Base>();
