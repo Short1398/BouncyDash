@@ -44,7 +44,7 @@ public class BouncyController : PlayerController_Base
     [Header("Stunned")]
     [Range(0.3f, 1.5f)]
     [SerializeField]
-    private float m_stunnedTime;
+    private float m_stunnedTime = 1f;
     [SerializeField]
     private float m_pushBackForce;
     float m_stunTimerHandler;
@@ -131,10 +131,6 @@ public class BouncyController : PlayerController_Base
 
         if (m_CurrentState == BouncyState.FREE_ROAMING)
         {
-            RaycastHit2D groundHit = Physics2D.Raycast(transform.position, -transform.up, m_capsuleCollider.size.y / 2 + 0.3f, LayerMask.GetMask(OBSTACLE));
-            m_grounded = groundHit;
-            ApplyGravityIfNotGrounded(); 
-            CheckJumpStatus();
             CheckPlayerHorizontalInput();
         }
 
@@ -142,7 +138,10 @@ public class BouncyController : PlayerController_Base
         {
             m_CurrentState = BouncyState.FREE_ROAMING;
         }
-
+        RaycastHit2D groundHit = Physics2D.Raycast(transform.position, -transform.up, m_capsuleCollider.size.y / 2 + 0.3f, LayerMask.GetMask(OBSTACLE));
+        m_grounded = groundHit;
+        ApplyGravityIfNotGrounded();
+        CheckJumpStatus();
     }
 
     private void FixedUpdate()
@@ -161,7 +160,7 @@ public class BouncyController : PlayerController_Base
         }
         else if (m_CurrentState == BouncyState.STUNNED)
         {
-            m_currentVelocity = m_StunnedDirection * m_pushBackForce;
+            m_currentVelocity = new Vector2(0, m_currentVerticalSpeed);
         }
            
 
@@ -196,28 +195,25 @@ public class BouncyController : PlayerController_Base
             if (collision.GetComponent<Enemy_Base>() || collision.tag == OBSTACLE || collision.gameObject.layer == LayerMask.NameToLayer(OBSTACLE))
             {
 
-                if (m_CurrentState == BouncyState.FREE_ROAMING)
+                if (m_rb.velocity.y < 0 && m_sensors.DSensor)
                 {
-                    if (m_rb.velocity.y < 0 && m_sensors.DSensor)
-                    {
-                        //m_grounded = true;
+                    //m_grounded = true;
 
-                        m_lastPositionAfterHittinGround = m_rb.position;
-                    }
-                    bool hitEnemy = collision.GetComponent<Enemy_Base>();
-                    if (hitEnemy) { Destroy(collision.gameObject); }
-                    ReactToBorders(hitEnemy);
-                    collisionCounter++;
+                    m_lastPositionAfterHittinGround = m_rb.position;
                 }
+                bool hitEnemy = collision.GetComponent<Enemy_Base>();
+                if (hitEnemy) { Destroy(collision.gameObject); }
+                ReactToBorders(hitEnemy);
+                collisionCounter++;
+              
             }
-            //else if (collision.gameObject.layer == LayerMask.NameToLayer(THREAT) && m_CurrentState != BouncyState.STUNNED)
-            //{
-            //    //TODO take damage
-            //    m_CurrentState = BouncyState.STUNNED;
-            //    m_stunTimerHandler = Time.time + m_stunnedTime;
-
-            //    m_StunnedDirection = (collision.transform.position - transform.position).normalized;
-            //}
+            else if (collision.gameObject.layer == LayerMask.NameToLayer(THREAT) && m_CurrentState != BouncyState.STUNNED)
+            {
+                //TODO take damage
+                m_CurrentState = BouncyState.STUNNED;
+                m_currentHorizontalSpeed = 0;
+                m_stunTimerHandler = Time.time + m_stunnedTime;
+            }
         }
 
 

@@ -22,6 +22,7 @@ public class SpikeScript : MonoBehaviour
     void OnTriggerEnter2D(Collider2D col)
     {
         //Debug.Log("-10 Health");
-        SceneManager.LoadScene("PrototypeLevel");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        
     }
 }
