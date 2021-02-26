@@ -70,7 +70,7 @@ public class HornetController : Enemy_Base
 
     void FollowPatrol()
     {
-        if (m_patrolWaypoints.Length > 0)
+        if (m_patrolWaypoints.Length > 1)
         {
             Vector2 target = m_patrolWaypoints[m_trackers.currentWaypoint].position;
             float distanceToTarget = Vector2.Distance(transform.position, target);

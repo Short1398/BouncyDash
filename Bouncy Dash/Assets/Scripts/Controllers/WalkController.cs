@@ -80,8 +80,6 @@ public class WalkController : PlayerController_Base
         CheckSwapStatus(this, m_bc);
         
 
-        Debug.Log(grounded);
-
         // Gravity & Jump
         grounded = false;
         if (Physics2D.Raycast(transform.position, -transform.up, m_capsuleCollider.size.y / 2 + 0.2f, LayerMask.GetMask("Obstacle"))) {
