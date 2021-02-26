@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4060375825916137186}
   - component: {fileID: 6757838254271563083}
   - component: {fileID: 116726733586762519}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: 'TurretHead '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -88,7 +88,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2649803373464599068}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Turret tip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -118,7 +118,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4224003051135038672}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: TurretHead Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -154,7 +154,7 @@ GameObject:
   - component: {fileID: 7926719630764326448}
   - component: {fileID: 7926719630764326447}
   - component: {fileID: -7842236328824199825}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: Basic Turret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -262,7 +262,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_enemyType: 0
-  damageDealt: 0
+  m_damageDealt: 0
+  m_accTime: 0
+  m_decTime: 0
+  m_maxHorizontalSpeed: 0
+  m_maxVerticalSpeed: 0
   m_minDistanceToPlayer: 5
   m_rotateSpeedInDeg: 60
   m_tipOfBarrel: {fileID: 2649803373464599068}
