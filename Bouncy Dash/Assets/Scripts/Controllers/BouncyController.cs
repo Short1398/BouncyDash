@@ -385,4 +385,15 @@ public class BouncyController : PlayerController_Base
 
     }
 
+    protected override bool IsGrounded() { return m_grounded; }
+    protected override void ResetVelocity()
+    {
+        base.ResetVelocity();
+        m_currentHorizontalSpeed = 0;
+        m_lastInputDirection = Vector2.zero;
+       
+        
+        m_currentVerticalSpeed = 0;
+        
+    }
 }

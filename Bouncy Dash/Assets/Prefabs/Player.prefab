@@ -266,10 +266,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_maxHorizontalSpeed: 10
-  m_minJumpheight: 6
-  m_maxJumpScalar: 1.5
+  m_minJumpheight: 4
+  m_maxJumpScalar: 2.25
   m_timeToReachApex: 1
-  m_jumpChargeTime: 2
+  m_jumpChargeTime: 1
   m_timetoReachMaxSpeedFromInput: 1
   m_gravityScalar: 1
   m_timeToReachTerminalVelocity: 1
@@ -289,9 +289,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_walkAcceleration: 4
   m_maxWalkSpeed: 4
-  m_dashSpeed: 10
-  m_dashDuration: 0.15
-  m_jumpForce: 30
+  m_dashSpeed: 5.4
+  m_dashDuration: 0.35
+  m_jumpForce: 15
   m_baseGravity: 0.3
   m_jumpGravity: 0.2
   m_terminalVelocity: 10

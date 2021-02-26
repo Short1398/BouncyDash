@@ -79,9 +79,12 @@ public class WalkController : PlayerController_Base
         m_capsuleCollider.isTrigger = false;
         CheckSwapStatus(this, m_bc);
         
+
+        Debug.Log(grounded);
+
         // Gravity & Jump
         grounded = false;
-        if (Physics2D.Raycast(transform.position, -transform.up, m_capsuleCollider.size.y / 2 + 0.1f, LayerMask.GetMask("Obstacle"))) {
+        if (Physics2D.Raycast(transform.position, -transform.up, m_capsuleCollider.size.y / 2 + 0.2f, LayerMask.GetMask("Obstacle"))) {
             grounded = true;
             velocity.y = 0;
         }
@@ -95,10 +98,10 @@ public class WalkController : PlayerController_Base
         }
         if (!grounded && !dashing) {
             if (jumping) {
-                velocity.y = Mathf.Clamp(velocity.y - m_jumpGravity, -m_terminalVelocity, m_terminalVelocity);
+                velocity.y = Mathf.Clamp(velocity.y - m_jumpGravity, -m_terminalVelocity, m_jumpForce);
             }
             else {
-                velocity.y = Mathf.Clamp(velocity.y - m_baseGravity, -m_terminalVelocity, m_terminalVelocity);
+                velocity.y = Mathf.Clamp(velocity.y - m_baseGravity, -m_terminalVelocity, m_jumpForce);
             }
         }
 
@@ -158,4 +161,11 @@ public class WalkController : PlayerController_Base
     //    Gizmos.color = Color.red;
     //    Gizmos.DrawLine(transform.position, transform.position + (-transform.up * m_capsuleCollider.size.magnitude));
     //}
+
+   protected override bool IsGrounded() { return grounded; }
+    protected override void ResetVelocity()
+    {
+        base.ResetVelocity();
+        velocity = Vector2.zero;
+    }
 }
