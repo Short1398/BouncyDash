@@ -275,6 +275,86 @@ MonoBehaviour:
   m_timeToReachTerminalVelocity: 1
   m_terminalVelocity: 22
   m_currentVerticalSpeed: 0
+  m_stunnedTime: 1
+  m_pushBackForce: 0
+  hurtFlash:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 5.452308
+      outSlope: 5.452308
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.15773453
+      value: 0.86001724
+      inSlope: -0.09167981
+      outSlope: -0.09167981
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.2758819
+      value: 0.19417799
+      inSlope: -0.26177454
+      outSlope: -0.26177454
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.4075035
+      value: 0.86704326
+      inSlope: 0.24289227
+      outSlope: 0.24289227
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.54968005
+      value: 0.20928691
+      inSlope: 0.008965492
+      outSlope: 0.008965492
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.68969965
+      value: 0.8595751
+      inSlope: 0.02046752
+      outSlope: 0.02046752
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.82937586
+      value: 0.21659935
+      inSlope: -0.005973816
+      outSlope: -0.005973816
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 4.5913825
+      outSlope: 4.5913825
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &4512654597337045956
 MonoBehaviour:
   m_ObjectHideFlags: 0

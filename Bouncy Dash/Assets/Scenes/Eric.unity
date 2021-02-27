@@ -241,7 +241,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_enemyType: 0
-  damageDealt: 0
+  m_damageDealt: 0
+  m_accTime: 0
+  m_decTime: 0
+  m_maxHorizontalSpeed: 0
+  m_maxVerticalSpeed: 0
 --- !u!1001 &376307120
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1048,7 +1052,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_enemyType: 0
-  damageDealt: 0
+  m_damageDealt: 0
+  m_accTime: 0
+  m_decTime: 0
+  m_maxHorizontalSpeed: 0
+  m_maxVerticalSpeed: 0
 --- !u!1 &1152881924
 GameObject:
   m_ObjectHideFlags: 0
@@ -1210,6 +1218,75 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fd561036e2fc5f64c86314aecfc8a575, type: 3}
+--- !u!1001 &1819893276
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6595399485033246688, guid: e51358cc054319e4a9f18712fb668562,
+        type: 3}
+      propertyPath: m_Name
+      value: Respawn Manager
+      objectReference: {fileID: 0}
+    - target: {fileID: 6595399485033246702, guid: e51358cc054319e4a9f18712fb668562,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 98.66
+      objectReference: {fileID: 0}
+    - target: {fileID: 6595399485033246702, guid: e51358cc054319e4a9f18712fb668562,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -8.936121
+      objectReference: {fileID: 0}
+    - target: {fileID: 6595399485033246702, guid: e51358cc054319e4a9f18712fb668562,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -699.0098
+      objectReference: {fileID: 0}
+    - target: {fileID: 6595399485033246702, guid: e51358cc054319e4a9f18712fb668562,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6595399485033246702, guid: e51358cc054319e4a9f18712fb668562,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6595399485033246702, guid: e51358cc054319e4a9f18712fb668562,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6595399485033246702, guid: e51358cc054319e4a9f18712fb668562,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6595399485033246702, guid: e51358cc054319e4a9f18712fb668562,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 6595399485033246702, guid: e51358cc054319e4a9f18712fb668562,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6595399485033246702, guid: e51358cc054319e4a9f18712fb668562,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6595399485033246702, guid: e51358cc054319e4a9f18712fb668562,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e51358cc054319e4a9f18712fb668562, type: 3}
 --- !u!1001 &1916182902
 PrefabInstance:
   m_ObjectHideFlags: 0
