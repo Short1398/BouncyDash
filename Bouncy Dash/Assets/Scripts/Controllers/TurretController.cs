@@ -52,6 +52,8 @@ public class TurretController : Enemy_Base
 
     private void RotateTowardsPlayer(Transform playerPos)
     {
+        //Find the angle between player and current turret, if angle is greater than the maximum rotation speed, then just rotate by the maximum rotation speed
+
         Vector2 playerPos2D = new Vector2(playerPos.position.x, playerPos.position.y);
         Vector2 selfPos2D = new Vector2(transform.position.x, transform.position.y);
 
@@ -78,6 +80,7 @@ public class TurretController : Enemy_Base
         Vector2 vToPlayer = (target - selfPos2D).normalized;
 
         BulletController bullet = Instantiate(m_bulletPrefab, m_tipOfBarrel.position, transform.rotation).GetComponent<BulletController>();
+        //Give bullet information needed to function
         bullet.BulletConstructor(transform.up, m_bulletSpeed, this.gameObject);
     }
 }
