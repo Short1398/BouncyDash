@@ -7,12 +7,12 @@ public class PlayerController_Base : MonoBehaviour
 
     // yup
 
-   protected const string HORIZONTALMOV = "Horizontal";
-   protected const string JUMP_BUTTON = "Jump";
-   protected const string SWAP_BUTTON = "Swap";
-   protected const string DASH_BUTTON = "Dash";
+    protected const string HORIZONTALMOV = "Horizontal";
+    protected const string JUMP_BUTTON = "Jump";
+    protected const string SWAP_BUTTON = "Swap";
+    protected const string DASH_BUTTON = "Dash";
 
-    
+
     protected Animator a;
 
     //Swapping properties
@@ -36,7 +36,7 @@ public class PlayerController_Base : MonoBehaviour
             if (a.gameObject.GetComponent<WalkController>().isActiveAndEnabled)
             {
                 WalkController controllerRef = a.gameObject.GetComponent<WalkController>();
-               controllerRef.ResetVelocity();
+                controllerRef.ResetVelocity();
             }
             else if (a.gameObject.GetComponent<BouncyController>().isActiveAndEnabled)
             {
@@ -49,13 +49,13 @@ public class PlayerController_Base : MonoBehaviour
 
             Rigidbody2D brb = b.GetComponent<Rigidbody2D>();
             brb.velocity = new Vector2(0, brb.velocity.y);
-            
+
             Game_Manager.SwapControllers(a, b);
             m_swapHandler = Time.time + m_swapCooldown;
-            
+
         }
     }
 
-   protected virtual bool IsGrounded() { return true; }
-   protected virtual void ResetVelocity() { }
+    protected virtual bool IsGrounded() { return true; }
+    protected virtual void ResetVelocity() { }
 }

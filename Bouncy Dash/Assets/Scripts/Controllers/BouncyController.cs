@@ -49,6 +49,9 @@ public class BouncyController : PlayerController_Base
     private float m_pushBackForce;
     float m_stunTimerHandler;
 
+
+    [SerializeField] AnimationCurve hurtFlash;
+
     bool m_grounded = false;
     bool m_bounceless = false;
 
@@ -149,6 +152,8 @@ public class BouncyController : PlayerController_Base
 
         ApplyGravityIfNotGrounded();
         CheckJumpStatus();
+
+        sr.color = Color.Lerp(Color.white, Color.red, hurtFlash.Evaluate(m_stunTimerHandler - Time.time));
     }
 
     private void FixedUpdate()
@@ -213,7 +218,18 @@ public class BouncyController : PlayerController_Base
                     m_lastPositionAfterHittinGround = m_rb.position;
                 }
                 bool hitEnemy = collision.GetComponent<Enemy_Base>();
-                if (hitEnemy) { Destroy(collision.gameObject); }
+                if (hitEnemy) {
+
+                    if (collision.GetComponent<Respawnable>())
+                    {
+                        collision.gameObject.GetComponent<Respawnable>().Die();
+                    }
+                    else
+                    {
+                        Destroy(collision.gameObject);
+                    }
+
+                }
                 ReactToBorders(hitEnemy);
                 collisionCounter++;
               
