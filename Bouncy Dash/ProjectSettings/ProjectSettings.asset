@@ -629,10 +629,10 @@ PlayerSettings:
     m_VersionCode: 1
     m_VersionName: 
   apiCompatibilityLevel: 6
-  cloudProjectId: 
+  cloudProjectId: d1924551-dc81-4a7f-a3ad-732fb80bc6fd
   framebufferDepthMemorylessMode: 0
-  projectName: 
-  organizationId: 
+  projectName: Bouncy Dash
+  organizationId: professordonut35
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0
   disableOldInputManagerSupport: 0
