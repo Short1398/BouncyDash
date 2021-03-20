@@ -30,9 +30,10 @@ public class SpikeScript : MonoBehaviour
         if (aC.gathering)
         {
             aT.TriggerEvent();
+            if (aC.debug) print("spike event fired for " + name);
         }
 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         
     }
 }

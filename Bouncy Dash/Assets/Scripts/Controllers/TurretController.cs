@@ -80,6 +80,7 @@ public class TurretController : Enemy_Base
         Vector2 vToPlayer = (target - selfPos2D).normalized;
 
         BulletController bullet = Instantiate(m_bulletPrefab, m_tipOfBarrel.position, transform.rotation).GetComponent<BulletController>();
+        bullet.name = name;
         //Give bullet information needed to function
         bullet.BulletConstructor(transform.up, m_bulletSpeed, this.gameObject);
     }

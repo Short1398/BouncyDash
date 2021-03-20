@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 public class BouncyController : PlayerController_Base
 {
-    Vector2 m_currentVelocity = new Vector2(1,1);
+    Vector2 m_currentVelocity = new Vector2(1, 1);
     Vector2 m_lastInputDirection;
     Vector2 m_lastPositionAfterHittinGround = Vector2.zero;
     Vector2 m_currentHorizontalVelocity;
@@ -22,7 +23,7 @@ public class BouncyController : PlayerController_Base
 
     //Jump properties
     [Header("Jump")]
-    [SerializeField]float m_minJumpheight = 6f;
+    [SerializeField] float m_minJumpheight = 6f;
     [SerializeField] float m_maxJumpScalar = 1.5f;
     [SerializeField] float m_timeToReachApex = 1f;
     [SerializeField] float m_jumpChargeTime = 2f;
@@ -97,6 +98,20 @@ public class BouncyController : PlayerController_Base
     ParticleSystem ps;
     ValueBar vb;
     int collisionCounter = 0;
+
+    [Header("Analytics")]
+    //Analytics stuff, no touchie
+    [SerializeField] AnalyticsEventTracker bounceEvent;
+    [SerializeField] AnalyticsEventTracker chainEvent;
+    [SerializeField] AnalyticsEventTracker stunEvent;
+    public string bounceName;
+    public float bounceUpwardVelocity;
+    List<string> chainEnemies;
+    public string chain;
+    public string stunName;
+    AnalyticsConfig aC;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -115,6 +130,10 @@ public class BouncyController : PlayerController_Base
         //Set jump limitations
         m_maxJumpHeight = m_minJumpheight * m_maxJumpScalar;
         m_currentJumpHeight = m_minJumpheight;
+
+        aC = FindObjectOfType<AnalyticsConfig>();
+        chainEnemies = new List<string>();
+
     }
 
     // Update is called once per frame
@@ -122,10 +141,10 @@ public class BouncyController : PlayerController_Base
     {
         m_capsuleCollider.isTrigger = true;
         CheckSwapStatus(this, m_wc);
-        
+
 
         //this isn't the best way to do this but the script swapping makes it awkward
-        if (a.GetBool("ballMode")==false)
+        if (a.GetBool("ballMode") == false)
         {
             a.SetBool("ballMode", true);
         }
@@ -178,7 +197,7 @@ public class BouncyController : PlayerController_Base
             //Ignore player input as long as player is stunned
             m_currentVelocity = new Vector2(0, m_currentVerticalSpeed);
         }
-           
+
 
         m_rb.velocity = m_currentVelocity;
 
@@ -186,7 +205,7 @@ public class BouncyController : PlayerController_Base
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(m_rb)
+        if (m_rb)
         {
             //if (collision.GetComponent<Enemy_Base>())
             //{
@@ -217,8 +236,9 @@ public class BouncyController : PlayerController_Base
                     //Record the last position when hitting the ground
                     m_lastPositionAfterHittinGround = m_rb.position;
                 }
-                bool hitEnemy = collision.GetComponent<Enemy_Base>();
-                if (hitEnemy) {
+                Enemy_Base hitEnemy = collision.GetComponent<Enemy_Base>();
+                if (hitEnemy)
+                {
 
                     if (collision.GetComponent<Respawnable>())
                     {
@@ -232,7 +252,7 @@ public class BouncyController : PlayerController_Base
                 }
                 ReactToBorders(hitEnemy);
                 collisionCounter++;
-              
+
             }
             //Did we hit anything that threatens the player?
             else if (collision.gameObject.layer == LayerMask.NameToLayer(THREAT) && m_CurrentState != BouncyState.STUNNED)
@@ -241,6 +261,18 @@ public class BouncyController : PlayerController_Base
                 m_CurrentState = BouncyState.STUNNED;
                 m_currentHorizontalSpeed = 0;
                 m_stunTimerHandler = Time.time + m_stunnedTime;
+
+                stunName = collision.gameObject.name;
+                if (aC.gathering)
+                {
+                    stunEvent.TriggerEvent();
+                    if (aC.debug) print("Stun Event fired: " + stunName);
+                }
+                else if (aC.debug)
+                {
+                    print("Stun Event not fired: " + stunName);
+                }
+
             }
         }
 
@@ -250,7 +282,7 @@ public class BouncyController : PlayerController_Base
     {
         //if (m_grounded && m_currentVerticalSpeed > 0) { m_grounded = false; }
     }
- //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     private void ApplyGravityIfNotGrounded()
     {
@@ -280,7 +312,7 @@ public class BouncyController : PlayerController_Base
             m_groundBufferHandler = Time.time + m_groundBufferTime;
         }
     }
- //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     private void BounceTowardsEnemyInRadar(Transform closestValidEnemy = null)
     {
@@ -296,7 +328,7 @@ public class BouncyController : PlayerController_Base
     {
         //Use a sphere cast to find all enemies within player radar
         Collider2D[] enemiesInRadar = Physics2D.OverlapCircleAll(m_rb.position, m_radarRadius, LayerMask.GetMask(THREAT));
-        if(enemiesInRadar.Length == 0)
+        if (enemiesInRadar.Length == 0)
         {
             m_CurrentState = BouncyState.FREE_ROAMING;
             return;
@@ -330,13 +362,13 @@ public class BouncyController : PlayerController_Base
                 }
             }
         }
-       
+
         //Check if there is a valid path to closest enemy
-        if(closestValidEnemy != null) { BounceTowardsEnemyInRadar(closestValidEnemy); }
+        if (closestValidEnemy != null) { BounceTowardsEnemyInRadar(closestValidEnemy); }
     }
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    
+
 
 
     private void CheckJumpStatus()
@@ -356,7 +388,7 @@ public class BouncyController : PlayerController_Base
 
             m_currentJumpHeight = Mathf.Clamp(m_currentJumpHeight, m_minJumpheight, m_maxJumpHeight);
 
-           
+
 
             if (m_currentJumpHeight == m_maxJumpHeight && ps.isEmitting == false)
             {
@@ -374,25 +406,25 @@ public class BouncyController : PlayerController_Base
         }
 
     }
- //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     private void CheckPlayerHorizontalInput()
     {
         //Debug.Log(m_currentVelocity);
         if (IsQuickturning())
         {
-            float quickTurnRate = (m_maxHorizontalSpeed / m_timetoReachMaxSpeedFromInput ) * Time.deltaTime;
+            float quickTurnRate = (m_maxHorizontalSpeed / m_timetoReachMaxSpeedFromInput) * Time.deltaTime;
             m_currentHorizontalSpeed -= quickTurnRate;
         }
         else if (InputManager.PressingMovementInput())
         {
             float horizontalAcc = (m_maxHorizontalSpeed / m_timetoReachMaxSpeedFromInput) * Time.deltaTime;
-            
+
             m_currentHorizontalSpeed += horizontalAcc;
             m_lastInputDirection = InputManager.GetMovementInput();
-            
+
         }
-       
+
     }
 
     private bool IsQuickturning()
@@ -402,25 +434,85 @@ public class BouncyController : PlayerController_Base
     }
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    private void ReactToBorders(bool hitENemy = false)
+    private void ReactToBorders(Enemy_Base hitENemy)
     {
+
         if (!m_bounceless)
         {
             //Up or down sensor were hit
             if (m_sensors.USensor || m_sensors.DSensor)
             {
                 //Bounce a bit less everytime
-                m_currentVerticalSpeed = hitENemy? m_currentVerticalSpeed * -1.5f : m_currentVerticalSpeed * -0.75f;
+                m_currentVerticalSpeed = hitENemy ? m_currentVerticalSpeed * -1.5f : m_currentVerticalSpeed * -0.75f;
+
             }
         }
-       //Left or right sensor were hit
+        //Left or right sensor were hit
         if (m_sensors.RSensor || m_sensors.LSensor)
         {
             m_currentHorizontalSpeed = hitENemy ? m_currentHorizontalSpeed += 2 : m_currentHorizontalSpeed;
             m_lastInputDirection.x *= -1;
         }
+        #region bounce analytics
+        if (hitENemy)
+        {
+
+            bounceName = hitENemy.name;
+            bounceUpwardVelocity = m_currentVerticalSpeed;
+
+            chainEnemies.Add(bounceName);
+
+            if (aC.gathering)
+            {
+
+                bounceEvent.TriggerEvent();
+                if (aC.debug) print("bounce event fired: " + bounceName + " at " + bounceUpwardVelocity);
+            }
+            else if (aC.debug)
+            {
+                print("bounce event not fired: " + bounceName + " at " + bounceUpwardVelocity);
+            }
+        }
+        else
+        {
+            if (m_grounded)
+            {
+                if (chainEnemies.Count > 1)
+                {
+
+                    chain = "";
+                    for (int i = 0; i < chainEnemies.Count; i++)
+                    {
+                        chain += chainEnemies[i];
+                        chain += " ";
+                    }
+
+                    if (aC.debug)
+                    {
+                        if (aC.gathering)
+                        {
+                            print("chain event fired: " + chain);
+                        }
+                        else
+                        {
+                            print("chain event not fired: " + chain);
+                        }
+                    }
+
+                }
+                else if (aC.debug)
+                {
+                    print("no chain");
+                }
+
+                chainEnemies.Clear();
+            }
+        }
+
+        #endregion
+
     }
- //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     //private Sensors GetSensorHit()
     //{
@@ -433,7 +525,7 @@ public class BouncyController : PlayerController_Base
         m_sensors.RSensor = Physics2D.Raycast(transform.position, transform.right, m_minSensorLength, LayerMask.GetMask(OBSTACLE, THREAT));
         m_sensors.RDSensor = Physics2D.Raycast(transform.position, (-transform.up + transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
         m_sensors.DSensor = Physics2D.Raycast(transform.position, -transform.up, m_rb.velocity.magnitude, LayerMask.GetMask(OBSTACLE, THREAT));
-        m_sensors.DLSensor = Physics2D.Raycast(transform.position, (-transform.up + -transform.right).normalized,m_minSensorLength, LayerMask.GetMask(OBSTACLE));
+        m_sensors.DLSensor = Physics2D.Raycast(transform.position, (-transform.up + -transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
         m_sensors.LSensor = Physics2D.Raycast(transform.position, -transform.right, m_minSensorLength, LayerMask.GetMask(OBSTACLE, THREAT));
         m_sensors.LUSensor = Physics2D.Raycast(transform.position, (transform.up + -transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
         float sensorLength = m_rb.velocity.magnitude * m_rbVelocityPercetange;
@@ -460,7 +552,7 @@ public class BouncyController : PlayerController_Base
             Gizmos.DrawLine(transform.position, transform.position + transform.right * sensorLength);
             Gizmos.DrawLine(transform.position, transform.position + -transform.right * sensorLength);
         }
-        
+
 
     }
 
@@ -470,9 +562,9 @@ public class BouncyController : PlayerController_Base
         base.ResetVelocity();
         m_currentHorizontalSpeed = 0;
         m_lastInputDirection = Vector2.zero;
-       
-        
+
+
         m_currentVerticalSpeed = 0;
-        
+
     }
 }

@@ -6,6 +6,7 @@ public class AnalyticsConfig : MonoBehaviour
 {
 
     public bool gathering;
+    public bool debug;
     public List<AnalyticsCheckpoint> checkPoints;
 
 }

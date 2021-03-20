@@ -306,7 +306,7 @@ MonoBehaviour:
   m_tipOfBarrel: {fileID: 2649803373464599068}
   m_bulletPrefab: {fileID: 2655759483351608276, guid: d6e4893dbeac61b40bba66124c83abb7,
     type: 3}
-  m_fireRate: 1.5
+  m_fireRate: 2.25
   m_bulletSpeed: 10
 --- !u!114 &710195496269129592
 MonoBehaviour:

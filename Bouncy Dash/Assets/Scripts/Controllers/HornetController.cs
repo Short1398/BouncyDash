@@ -44,6 +44,7 @@ public class HornetController : Enemy_Base
         m_currentState = FlyingStages.FOLLOW_PATROL;
         m_currentHorizontalSpeed = m_maxHorizontalSpeed;
         m_currentVerticalSpeed = m_maxVerticalSpeed;
+        transform.GetChild(0).name = name;
     }
 
     // Update is called once per frame

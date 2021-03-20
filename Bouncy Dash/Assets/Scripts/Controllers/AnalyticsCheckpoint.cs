@@ -29,7 +29,7 @@ public class AnalyticsCheckpoint : MonoBehaviour
             passed = true;
 
 
-            if (aC.checkPoints[checkPointNum - 1])
+            if (checkPointNum !=0)
             {
                 analyticsTime = Time.timeSinceLevelLoad - aC.checkPoints[checkPointNum - 1].timeAtCheck;
             }
@@ -38,13 +38,12 @@ public class AnalyticsCheckpoint : MonoBehaviour
                 analyticsTime = Time.timeSinceLevelLoad;
             }
 
-
             if (aC.gathering)
             {
                 aT.TriggerEvent();
-                print("checkPoint " + checkPointNum + "EventTriggered");
+                if(aC.debug)print("checkPoint " + checkPointNum + "EventTriggered");
             }
-            else
+            else if (aC.debug)
             {
                 print("checkPoint " + checkPointNum + " EventNotSent");
             }
