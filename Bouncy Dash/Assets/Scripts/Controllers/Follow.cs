@@ -9,14 +9,8 @@ public class Follow : MonoBehaviour
     [SerializeField] Transform target;
     [SerializeField] Vector2 offset;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (canvasObject)
         {
