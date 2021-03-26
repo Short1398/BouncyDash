@@ -119,7 +119,7 @@ public class BouncyController : PlayerController_Base
         m_rb = GetComponent<Rigidbody2D>();
         m_wc = GetComponent<WalkController>();
         m_capsuleCollider = GetComponent<CapsuleCollider2D>();
-        a = GetComponentInChildren<Animator>();
+        m_animator = GetComponentInChildren<Animator>();
         sr = GetComponentInChildren<SpriteRenderer>();
         ps = GetComponentInChildren<ParticleSystem>();
         vb = GetComponentInChildren<ValueBar>();
@@ -144,9 +144,9 @@ public class BouncyController : PlayerController_Base
 
 
         //this isn't the best way to do this but the script swapping makes it awkward
-        if (a.GetBool("ballMode") == false)
+        if (m_animator.GetBool("ballMode") == false)
         {
-            a.SetBool("ballMode", true);
+            m_animator.SetBool("ballMode", true);
         }
 
         //Fire sensors that objext surroundings

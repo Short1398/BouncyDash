@@ -5,15 +5,68 @@ using UnityEngine;
 public class PlayerController_Base : MonoBehaviour
 {
 
-    // yup
+    [Header("Horizontal Speed")]
+    [SerializeField]
+    protected float m_timeToReachMaxSpeed;
 
+    //Jump properties
+    [Header("Jump")]
+    [SerializeField] float m_minJumpheight = 6f;
+    [SerializeField] float m_maxJumpScalar = 1.5f;
+    [SerializeField] float m_timeToReachApex = 1f;
+    [SerializeField] float m_jumpChargeTime = 2f;
+    float m_currentJumpHeight;
+    float m_maxJumpHeight;//Will be initialized during Start()
+
+    [Header("Gravity")]
+    [SerializeField] float m_gravityScalar = 1f;
+    [SerializeField] float m_timeToReachTerminalVelocity = 1f;
+    [SerializeField] float m_terminalVelocity = 22f;
+
+    [Header("Stunned")]
+    [Range(0.3f, 1.5f)]
+    [SerializeField]
+    private float m_stunnedTime = 1f;
+    [SerializeField]
+    private float m_pushBackForce;
+    float m_stunTimerHandler;
+
+    //Main dynamic forces
+    protected float m_currentHorizontalSpeed;
+    protected float m_currentVerticalSpeed;
+
+    //Basic direction and position tracking properties
+    protected Vector2 m_currentTotalVelocity;
+    protected Vector2 m_currentHorizontalVelocity;
+    protected Vector2 m_currentVerticalVelocity;
+    protected Vector2 m_lastInputDirection;
+    protected Vector2 m_lastCalculatedVelocity;
+
+    //Input bindings for input manager
     protected const string HORIZONTALMOV = "Horizontal";
     protected const string JUMP_BUTTON = "Jump";
     protected const string SWAP_BUTTON = "Swap";
     protected const string DASH_BUTTON = "Dash";
 
+    //Layers or tag tracking by name
+    protected const string OBSTACLE = "Obstacle";
+    protected const string THREAT = "Threat";
 
-    protected Animator a;
+
+    //Components
+    protected Animator m_animator;
+    protected Rigidbody2D m_rb;
+
+
+    virtual protected void Start()
+    {
+        m_rb = GetComponent<Rigidbody2D>();
+        m_animator = GetComponent<Animator>();
+
+        //Set jump limitations
+        m_maxJumpHeight = m_minJumpheight * m_maxJumpScalar;
+        m_currentJumpHeight = m_minJumpheight;
+    }
 
     //Swapping properties
     protected float m_swapCooldown = 1f;
@@ -27,7 +80,7 @@ public class PlayerController_Base : MonoBehaviour
 
     protected VelocityRef m_velocityReference;
 
-    protected bool m_Grounded;
+    protected bool m_grounded;
 
     protected void CheckSwapStatus(PlayerController_Base a, PlayerController_Base b)
     {

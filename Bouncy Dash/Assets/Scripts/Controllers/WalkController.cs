@@ -44,7 +44,7 @@ public class WalkController : PlayerController_Base
         m_capsuleCollider = gameObject.GetComponent<CapsuleCollider2D>();
         m_rigidBody = gameObject.GetComponent<Rigidbody2D>();
         m_bc = gameObject.GetComponent<BouncyController>();
-        a = GetComponentInChildren<Animator>();
+        m_animator = GetComponentInChildren<Animator>();
         sr = GetComponentInChildren<SpriteRenderer>();
 
         m_bc.enabled = false;
@@ -55,7 +55,7 @@ public class WalkController : PlayerController_Base
     {
         //Animation
         
-        a.SetFloat("speed", Mathf.Abs(velocity.x));
+        m_animator.SetFloat("speed", Mathf.Abs(velocity.x));
 
         if (InputManager.PressingMovementInput())
         {
@@ -71,9 +71,9 @@ public class WalkController : PlayerController_Base
         
 
         //(this isn't the best way to do this but the script swapping makes it awkward)
-        if (a.GetBool("ballMode"))
+        if (m_animator.GetBool("ballMode"))
         {
-            a.SetBool("ballMode", false);
+            m_animator.SetBool("ballMode", false);
         }
         
         m_capsuleCollider.isTrigger = false;
