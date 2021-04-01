@@ -552,13 +552,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 815327134}
-  m_LocalRotation: {x: -0, y: -0, z: -0.70611084, w: 0.7081014}
+  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0.12, y: -4.78, z: 0}
   m_LocalScale: {x: 1, y: 19.669369, z: 1}
   m_Children: []
   m_Father: {fileID: 393862212}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -89.839005}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!61 &815327136
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1104,37 +1104,6 @@ Transform:
   m_Father: {fileID: 398780138}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1425453567 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4512654597337045955, guid: 0eb399d3c3c90fd4e9ea9ad453ca95a8,
-    type: 3}
-  m_PrefabInstance: {fileID: 1990764861}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1425453568
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1425453567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0168b172399a5644bc013dd42ee453a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_timeToReachMaxSpeed: 3
-  m_maxDefaultSpeed: 4
-  m_minJumpheight: 6
-  m_maxJumpScalar: 1.5
-  m_timeToReachApex: 1
-  m_jumpChargeTime: 2
-  m_gravityScalar: 1
-  m_timeToReachTerminalVelocity: 1
-  m_terminalVelocity: 22
-  m_stunnedTime: 1
-  m_pushBackForce: 0
-  m_maxBHorizontalSpeed: 6
-  m_btimeToReachMaxSpeed: 0
 --- !u!1 &1922285952
 GameObject:
   m_ObjectHideFlags: 0
@@ -1333,6 +1302,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_timeToReachMaxSpeed
       value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4735823549834549535, guid: 0eb399d3c3c90fd4e9ea9ad453ca95a8,
+        type: 3}
+      propertyPath: m_jumpBufferminDistance
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4512654597337045956, guid: 0eb399d3c3c90fd4e9ea9ad453ca95a8, type: 3}
