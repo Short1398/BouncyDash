@@ -795,6 +795,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Basic Turret
       objectReference: {fileID: 0}
+    - target: {fileID: 7926719630764326445, guid: 6aa14e80d701d56449252b25811a0678,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7926719630764326446, guid: 6aa14e80d701d56449252b25811a0678,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1117,7 +1122,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0168b172399a5644bc013dd42ee453a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_timeToReachMaxSpeed: 0
+  m_timeToReachMaxSpeed: 3
+  m_maxDefaultSpeed: 4
   m_minJumpheight: 6
   m_maxJumpScalar: 1.5
   m_timeToReachApex: 1
@@ -1127,6 +1133,8 @@ MonoBehaviour:
   m_terminalVelocity: 22
   m_stunnedTime: 1
   m_pushBackForce: 0
+  m_maxBHorizontalSpeed: 6
+  m_btimeToReachMaxSpeed: 0
 --- !u!1 &1922285952
 GameObject:
   m_ObjectHideFlags: 0
@@ -1251,6 +1259,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 4512654597337045957, guid: 0eb399d3c3c90fd4e9ea9ad453ca95a8,
+        type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4512654597337045961, guid: 0eb399d3c3c90fd4e9ea9ad453ca95a8,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1259,7 +1272,7 @@ PrefabInstance:
     - target: {fileID: 4512654597337045961, guid: 0eb399d3c3c90fd4e9ea9ad453ca95a8,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.9061486
+      value: -1.02
       objectReference: {fileID: 0}
     - target: {fileID: 4512654597337045961, guid: 0eb399d3c3c90fd4e9ea9ad453ca95a8,
         type: 3}
@@ -1310,6 +1323,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_stunnedTime
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4735823549834549535, guid: 0eb399d3c3c90fd4e9ea9ad453ca95a8,
+        type: 3}
+      propertyPath: m_btimeToReachMaxSpeed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4735823549834549535, guid: 0eb399d3c3c90fd4e9ea9ad453ca95a8,
+        type: 3}
+      propertyPath: m_timeToReachMaxSpeed
+      value: 1.1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4512654597337045956, guid: 0eb399d3c3c90fd4e9ea9ad453ca95a8, type: 3}

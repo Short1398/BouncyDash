@@ -76,7 +76,7 @@ MonoBehaviour:
           m_ValueType: System.String
           m_Value: 
           m_Target:
-            m_Target: {fileID: 4512654597337045962}
+            m_Target: {fileID: 0}
             m_Path: bounceName
             m_ValidTypeNames:
             - System.Int32
@@ -106,7 +106,7 @@ MonoBehaviour:
           m_ValueType: System.Single
           m_Value: 
           m_Target:
-            m_Target: {fileID: 4512654597337045962}
+            m_Target: {fileID: 0}
             m_Path: bounceUpwardVelocity
             m_ValidTypeNames:
             - System.Int32
@@ -197,7 +197,7 @@ MonoBehaviour:
           m_ValueType: System.String
           m_Value: 
           m_Target:
-            m_Target: {fileID: 4512654597337045962}
+            m_Target: {fileID: 0}
             m_Path: chain
             m_ValidTypeNames:
             - System.Int32
@@ -417,9 +417,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4512654597337045961}
   - component: {fileID: 4512654597337045957}
-  - component: {fileID: 4512654597337045962}
-  - component: {fileID: 4512654597337045956}
   - component: {fileID: 4512654597337045958}
+  - component: {fileID: 2430419791198572797}
+  - component: {fileID: 3766083119239262447}
+  - component: {fileID: 4735823549834549535}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -468,137 +469,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &4512654597337045962
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4512654597337045955}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7533f39db35fbd14cafb5705f8ed4a7e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_maxHorizontalSpeed: 10
-  m_minJumpheight: 4
-  m_maxJumpScalar: 2.25
-  m_timeToReachApex: 1
-  m_jumpChargeTime: 1
-  m_timetoReachMaxSpeedFromInput: 1
-  m_gravityScalar: 1
-  m_timeToReachTerminalVelocity: 1
-  m_terminalVelocity: 22
-  m_currentVerticalSpeed: 0
-  m_stunnedTime: 1
-  m_pushBackForce: 0
-  hurtFlash:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 5.452308
-      outSlope: 5.452308
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.15773453
-      value: 0.86001724
-      inSlope: -0.09167981
-      outSlope: -0.09167981
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.2758819
-      value: 0.19417799
-      inSlope: -0.26177454
-      outSlope: -0.26177454
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.4075035
-      value: 0.86704326
-      inSlope: 0.24289227
-      outSlope: 0.24289227
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.54968005
-      value: 0.20928691
-      inSlope: 0.008965492
-      outSlope: 0.008965492
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.68969965
-      value: 0.8595751
-      inSlope: 0.02046752
-      outSlope: 0.02046752
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.82937586
-      value: 0.21659935
-      inSlope: -0.005973816
-      outSlope: -0.005973816
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 4.5913825
-      outSlope: 4.5913825
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  bounceEvent: {fileID: 137545182795483992}
-  chainEvent: {fileID: 4397301993261414641}
-  stunEvent: {fileID: 8092232658244456367}
-  bounceName: 
-  bounceUpwardVelocity: 0
-  chain: 
-  stunName: 
---- !u!114 &4512654597337045956
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4512654597337045955}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ffaf78628c8e7fe49a2fd2724c31f6cd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_walkAcceleration: 4
-  m_maxWalkSpeed: 4
-  m_dashSpeed: 5.4
-  m_dashDuration: 0.35
-  m_jumpForce: 15
-  m_baseGravity: 0.3
-  m_jumpGravity: 0.2
-  m_terminalVelocity: 10
-  m_deceleration: 4
-  m_deadZone: 0.25
 --- !u!70 &4512654597337045958
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -615,6 +485,89 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 1}
   m_Direction: 0
+--- !u!114 &2430419791198572797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4512654597337045955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7533f39db35fbd14cafb5705f8ed4a7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_timeToReachMaxSpeed: 0
+  m_maxDefaultSpeed: 0
+  m_minJumpheight: 6
+  m_maxJumpScalar: 1.5
+  m_timeToReachApex: 1
+  m_jumpChargeTime: 2
+  m_gravityScalar: 1
+  m_timeToReachTerminalVelocity: 1
+  m_terminalVelocity: 22
+  m_stunnedTime: 1
+  m_pushBackForce: 0
+  hurtFlash:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  bounceEvent: {fileID: 0}
+  chainEvent: {fileID: 0}
+  stunEvent: {fileID: 0}
+  bounceName: 
+  bounceUpwardVelocity: 0
+  chain: 
+  stunName: 
+--- !u!114 &3766083119239262447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4512654597337045955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffaf78628c8e7fe49a2fd2724c31f6cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_timeToReachMaxSpeed: 0
+  m_maxDefaultSpeed: 0
+  m_minJumpheight: 6
+  m_maxJumpScalar: 1.5
+  m_timeToReachApex: 1
+  m_jumpChargeTime: 2
+  m_gravityScalar: 1
+  m_timeToReachTerminalVelocity: 1
+  m_terminalVelocity: 22
+  m_stunnedTime: 1
+  m_pushBackForce: 0
+--- !u!114 &4735823549834549535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4512654597337045955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0168b172399a5644bc013dd42ee453a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_timeToReachMaxSpeed: 3
+  m_maxDefaultSpeed: 4
+  m_minJumpheight: 6
+  m_maxJumpScalar: 1.5
+  m_timeToReachApex: 1
+  m_jumpChargeTime: 2
+  m_gravityScalar: 1
+  m_timeToReachTerminalVelocity: 1
+  m_terminalVelocity: 22
+  m_stunnedTime: 1
+  m_pushBackForce: 0
+  m_maxBHorizontalSpeed: 6
 --- !u!1 &6231369875848299921
 GameObject:
   m_ObjectHideFlags: 0
@@ -691,7 +644,7 @@ MonoBehaviour:
           m_ValueType: System.String
           m_Value: 
           m_Target:
-            m_Target: {fileID: 4512654597337045962}
+            m_Target: {fileID: 0}
             m_Path: stunName
             m_ValidTypeNames:
             - System.Int32

@@ -8,25 +8,31 @@ public class PlayerController_Base : MonoBehaviour
     [Header("Horizontal Speed")]
     [SerializeField]
     protected float m_timeToReachMaxSpeed;
+    [SerializeField]
+    protected float m_maxDefaultSpeed;
 
     //Jump properties
     [Header("Jump")]
-    [SerializeField] float m_minJumpheight = 6f;
-    [SerializeField] float m_maxJumpScalar = 1.5f;
-    [SerializeField] float m_timeToReachApex = 1f;
-    [SerializeField] float m_jumpChargeTime = 2f;
-    float m_currentJumpHeight;
-    float m_maxJumpHeight;//Will be initialized during Start()
+    [SerializeField] protected float m_minJumpheight = 6f;
+    [SerializeField] protected float m_maxJumpScalar = 1.5f;
+    [SerializeField] protected float m_timeToReachApex = 1f;
+    [SerializeField] protected float m_jumpChargeTime = 2f;
+    protected float m_currentJumpHeight;
+    protected float m_maxJumpHeight;//Will be initialized during Start()
 
     [Header("Gravity")]
-    [SerializeField] float m_gravityScalar = 1f;
-    [SerializeField] float m_timeToReachTerminalVelocity = 1f;
-    [SerializeField] float m_terminalVelocity = 22f;
+    [SerializeField] protected float m_gravityScalar = 1f;
+    [SerializeField] protected float m_timeToReachTerminalVelocity = 1f;
+    [SerializeField] protected float m_terminalVelocity = 22f;
+
+    [Header("Dashing")]
+    [SerializeField] protected float m_timeToDash = 1f;
+    [SerializeField] protected float m_maxDashSpeed = 8f;
 
     [Header("Stunned")]
     [Range(0.3f, 1.5f)]
     [SerializeField]
-    private float m_stunnedTime = 1f;
+    protected float m_stunnedTime = 1f;
     [SerializeField]
     private float m_pushBackForce;
     float m_stunTimerHandler;
@@ -34,6 +40,13 @@ public class PlayerController_Base : MonoBehaviour
     //Main dynamic forces
     protected float m_currentHorizontalSpeed;
     protected float m_currentVerticalSpeed;
+
+    //Internal floats
+    public struct PC_TimerHandlers
+    {
+        public float dashHandler;
+    }
+    protected PC_TimerHandlers m_timerHandler;
 
     //Basic direction and position tracking properties
     protected Vector2 m_currentTotalVelocity;
@@ -52,6 +65,9 @@ public class PlayerController_Base : MonoBehaviour
     protected const string OBSTACLE = "Obstacle";
     protected const string THREAT = "Threat";
 
+    //Bool checks
+    protected bool m_grounded;
+    protected bool m_isDashing;
 
     //Components
     protected Animator m_animator;
@@ -61,56 +77,30 @@ public class PlayerController_Base : MonoBehaviour
     virtual protected void Start()
     {
         m_rb = GetComponent<Rigidbody2D>();
-        m_animator = GetComponent<Animator>();
+        //m_animator = GetComponent<Animator>();
+        m_animator = GetComponentInChildren<Animator>();
 
         //Set jump limitations
         m_maxJumpHeight = m_minJumpheight * m_maxJumpScalar;
         m_currentJumpHeight = m_minJumpheight;
     }
 
-    //Swapping properties
-    protected float m_swapCooldown = 1f;
-    protected float m_swapHandler;
-    protected Vector2 m_previousVelocityBeforeSwap;
 
-    protected class VelocityRef
+    //Hardcode solution to bounvy border check
+    [HideInInspector]
+    public struct bHitResults
     {
-        public Vector2 CurrentVelocity;
-    }
-
-    protected VelocityRef m_velocityReference;
-
-    protected bool m_grounded;
-
-    protected void CheckSwapStatus(PlayerController_Base a, PlayerController_Base b)
-    {
-        if (InputManager.SwapPressed() && Time.time > m_swapHandler)
+        public bHitResults(bool res1, bool res2)
         {
-            //Reset velocity for active player controller
-
-            if (a.gameObject.GetComponent<WalkController>().isActiveAndEnabled)
-            {
-                WalkController controllerRef = a.gameObject.GetComponent<WalkController>();
-                controllerRef.ResetVelocity();
-            }
-            else if (a.gameObject.GetComponent<BouncyController>().isActiveAndEnabled)
-            {
-                BouncyController controllerRef = a.gameObject.GetComponent<BouncyController>();
-                controllerRef.ResetVelocity();
-            }
-
-
-
-
-            Rigidbody2D brb = b.GetComponent<Rigidbody2D>();
-            brb.velocity = new Vector2(0, brb.velocity.y);
-
-            Game_Manager.SwapControllers(a, b);
-            
-            m_swapHandler = Time.time + m_swapCooldown;//Activate swap timer
-            
+            bounceHorizontally = res1;
+            bounceVertically = res2;
         }
+        public bool bounceHorizontally, bounceVertically;
     }
+    protected bHitResults m_bounceResult;
+
+    //Swapping properties
+    protected Vector2 m_previousVelocityBeforeSwap;
 
     protected virtual bool IsGrounded() { return true; }
     protected virtual void ResetVelocity() { }
