@@ -11,7 +11,8 @@ public class LevelEndGate : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
-            SceneManager.LoadScene(SceneManager.GetSceneByBuildIndex(SceneManager.GetActiveScene().buildIndex + 1).name);
+            //I copied this over
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
     }
 }
