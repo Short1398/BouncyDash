@@ -80,6 +80,8 @@ public class BouncyController : PlayerController_Base
     float m_minSensorLength = 2f;
     float m_rbVelocityPercetange = 0.25f;
 
+    HashSet<RaycastHit2D> m_sensorBuffer = new HashSet<RaycastHit2D>();
+
     ////Layers or axis
     //const string OBSTACLE = "Obstacle";
     //const string THREAT = "Threat";
@@ -423,87 +425,103 @@ public class BouncyController : PlayerController_Base
     //}
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   public bHitResults ReactToBorders(Enemy_Base hitENemy)
+   public bHitResults ReactToBorders(Collider2D colliderHit)
     {
 
         bHitResults result = new bHitResults();
         if (!m_bounceless)
         {
-            //Up or down sensor were hit
-            if (m_sensors.USensor || m_sensors.DSensor)
+            foreach (RaycastHit2D sensorHit in m_sensorBuffer)
             {
-                //Bounce a bit less everytime
-                m_currentVerticalSpeed = hitENemy ? m_currentVerticalSpeed * -1.5f : m_currentVerticalSpeed * -0.75f;
-
-                result.bounceVertically = true;
-
-            }
-        }
-        //Left or right sensor were hit
-        if (m_sensors.RSensor || m_sensors.LSensor)
-        {
-            m_currentHorizontalSpeed = hitENemy ? m_currentHorizontalSpeed += 2 : m_currentHorizontalSpeed;
-            m_lastInputDirection.x *= -1;
-
-            result.bounceHorizontally = true;
-        }
-        #region bounce analytics
-        if (hitENemy)
-        {
-
-            bounceName = hitENemy.name;
-            bounceUpwardVelocity = m_currentVerticalSpeed;
-
-            chainEnemies.Add(bounceName);
-
-            if (aC.gathering)
-            {
-
-                bounceEvent.TriggerEvent();
-                if (aC.debug) print("bounce event fired: " + bounceName + " at " + bounceUpwardVelocity);
-            }
-            else if (aC.debug)
-            {
-                print("bounce event not fired: " + bounceName + " at " + bounceUpwardVelocity);
-            }
-        }
-        else
-        {
-            if (m_grounded)
-            {
-                if (chainEnemies.Count > 1)
+                string obstacleName = colliderHit.transform.name;
+                string sensorHitName = sensorHit.transform.name;
+                if (obstacleName == sensorHitName)
                 {
-
-                    chain = "";
-                    for (int i = 0; i < chainEnemies.Count; i++)
+                    if (sensorHit == m_sensors.LSensor || sensorHit == m_sensors.RSensor)
                     {
-                        chain += chainEnemies[i];
-                        chain += " ";
+                        result.bounceHorizontally = true;
                     }
-
-                    if (aC.debug)
+                    else
                     {
-                        if (aC.gathering)
-                        {
-                            print("chain event fired: " + chain);
-                        }
-                        else
-                        {
-                            print("chain event not fired: " + chain);
-                        }
+                        result.bounceVertically = true;
                     }
-
                 }
-                else if (aC.debug)
-                {
-                    print("no chain");
-                }
-
-                chainEnemies.Clear();
             }
         }
+        //    //Up or down sensor were hit
+        //    if (m_sensors.USensor || m_sensors.DSensor)
+        //    {
+        //        //Bounce a bit less everytime
+        //        //m_currentVerticalSpeed = hitENemy ? m_currentVerticalSpeed * -1.5f : m_currentVerticalSpeed * -0.75f;
 
-        #endregion
+        //        result.bounceVertically = true;
+
+        //    }
+        //}
+        ////Left or right sensor were hit
+        //if (m_sensors.RSensor || m_sensors.LSensor)
+        //{
+        //    //m_currentHorizontalSpeed = hitENemy ? m_currentHorizontalSpeed += 2 : m_currentHorizontalSpeed;
+        //    m_lastInputDirection.x *= -1;
+
+        //    result.bounceHorizontally = true;
+        //#region bounce analytics
+        //if (hitENemy)
+        //{
+
+        //    bounceName = hitENemy.name;
+        //    bounceUpwardVelocity = m_currentVerticalSpeed;
+
+        //    chainEnemies.Add(bounceName);
+
+        //    if (aC.gathering)
+        //    {
+
+        //        bounceEvent.TriggerEvent();
+        //        if (aC.debug) print("bounce event fired: " + bounceName + " at " + bounceUpwardVelocity);
+        //    }
+        //    else if (aC.debug)
+        //    {
+        //        print("bounce event not fired: " + bounceName + " at " + bounceUpwardVelocity);
+        //    }
+        //}
+        //else
+        //{
+        //    if (m_grounded)
+        //    {
+        //        if (chainEnemies.Count > 1)
+        //        {
+
+        //            chain = "";
+        //            for (int i = 0; i < chainEnemies.Count; i++)
+        //            {
+        //                chain += chainEnemies[i];
+        //                chain += " ";
+        //            }
+
+        //            if (aC.debug)
+        //            {
+        //                if (aC.gathering)
+        //                {
+        //                    print("chain event fired: " + chain);
+        //                }
+        //                else
+        //                {
+        //                    print("chain event not fired: " + chain);
+        //                }
+        //            }
+
+        //        }
+        //        else if (aC.debug)
+        //        {
+        //            print("no chain");
+        //        }
+
+        //        chainEnemies.Clear();
+        //    }
+        //}
+
+        //#endregion
         return result;
     }
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -514,6 +532,8 @@ public class BouncyController : PlayerController_Base
     //}
     public void SetSensors()
     {
+        m_sensorBuffer.Clear();
+
         m_sensors.USensor = Physics2D.Raycast(transform.position, transform.up, m_minSensorLength, LayerMask.GetMask(OBSTACLE, THREAT));
         m_sensors.URSensor = Physics2D.Raycast(transform.position, (transform.up + transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
         m_sensors.RSensor = Physics2D.Raycast(transform.position, transform.right, m_minSensorLength, LayerMask.GetMask(OBSTACLE, THREAT));
@@ -522,6 +542,13 @@ public class BouncyController : PlayerController_Base
         m_sensors.DLSensor = Physics2D.Raycast(transform.position, (-transform.up + -transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
         m_sensors.LSensor = Physics2D.Raycast(transform.position, -transform.right, m_minSensorLength, LayerMask.GetMask(OBSTACLE, THREAT));
         m_sensors.LUSensor = Physics2D.Raycast(transform.position, (transform.up + -transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
+
+        UpdateSensorHits(m_sensors.USensor);
+        UpdateSensorHits(m_sensors.DSensor);
+        UpdateSensorHits(m_sensors.LSensor);
+        UpdateSensorHits(m_sensors.RSensor);
+
+
         //float sensorLength = m_rb.velocity.magnitude * m_rbVelocityPercetange;
         //sensorLength = Mathf.Clamp(sensorLength, m_minSensorLength, m_minSensorLength + sensorLength);
         //m_sensors.USensor = Physics2D.Raycast(transform.position, transform.up, sensorLength, LayerMask.GetMask(OBSTACLE));
@@ -532,6 +559,16 @@ public class BouncyController : PlayerController_Base
         //m_sensors.DLSensor = Physics2D.Raycast(transform.position, (-transform.up + -transform.right).normalized,sensorLength, LayerMask.GetMask(OBSTACLE));
         //m_sensors.LSensor = Physics2D.Raycast(transform.position, -transform.right,sensorLength, LayerMask.GetMask(OBSTACLE));
         //m_sensors.LUSensor = Physics2D.Raycast(transform.position, (transform.up + -transform.right).normalized, sensorLength, LayerMask.GetMask(OBSTACLE));
+    }
+
+    void UpdateSensorHits(RaycastHit2D hitDetected)
+    {
+        if (!hitDetected) return;
+
+        if (!m_sensorBuffer.Contains(hitDetected))
+        {
+            m_sensorBuffer.Add(hitDetected);
+        }
     }
 
     private void OnDrawGizmos()

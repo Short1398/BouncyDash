@@ -5,6 +5,12 @@ using UnityEngine;
 [RequireComponent(typeof(WalkController), typeof(WalkController))]
 public class MergedPlayerController : PlayerController_Base
 {
+    [Header("Bouncy Jump Properties")]
+    [SerializeField]
+    private float m_bminJumpHeight = 5f;
+    [SerializeField]
+    private float m_jumpBufferminDistance = 1f;
+
     [Header("Bouncy Horizontal Properties")]
     [SerializeField]
     private float m_maxBHorizontalSpeed;
@@ -46,6 +52,7 @@ public class MergedPlayerController : PlayerController_Base
     Vector2 m_lastPositionAfterHittingGround = Vector2.zero;
 
     bool m_placeOnGroundFlag = false;
+    bool m_bounceless = true;
 
     //Controller components
     BouncyController m_bController;
@@ -142,6 +149,16 @@ public class MergedPlayerController : PlayerController_Base
         {
 
         }
+        if (m_currentController == PlayerControllers.BOUNCY)
+        {
+            float gravityAccRate = (m_terminalVelocity / m_timeToReachTerminalVelocity) * m_gravityScalar;
+            gravityAccRate *= Time.deltaTime;
+            float distanceToGround = Vector2.Distance(transform.position, m_lastPositionAfterHittingGround);
+
+            Debug.Log(Mathf.Abs(m_currentVerticalSpeed) + " VS " + gravityAccRate * 6f + " Distance to ground " + distanceToGround);
+            Debug.Log(m_currentVerticalSpeed);
+        }
+        
     }
 
     private void OnDrawGizmos()
@@ -208,7 +225,7 @@ public class MergedPlayerController : PlayerController_Base
 
                 }
 
-                CheckBorderReaction(hitEnemy);
+                CheckBorderReaction(collision, hitEnemy);
 
             }
             //Did we hit anything that threatens the player?
@@ -331,6 +348,7 @@ public class MergedPlayerController : PlayerController_Base
             m_currentVerticalSpeed = (2 * jumpHeight) / m_timeToReachApex;
             m_grounded = false;
             m_currentJumpHeight = m_minJumpheight;
+            m_bounceless = false;
         }
         else if (isBouncy && jumpHeld)
         {
@@ -360,33 +378,39 @@ public class MergedPlayerController : PlayerController_Base
         }
     }
 
-    void CheckBorderReaction(Enemy_Base hitEnemy = null)
+    void CheckBorderReaction(Collider2D colliderHit, Enemy_Base hitEnemy = null)
     {
         if (m_currentController != PlayerControllers.BOUNCY) return;
 
-        m_bounceResult = m_bController.ReactToBorders(hitEnemy);
+        m_bounceResult = m_bController.ReactToBorders(colliderHit);
 
         if (m_bounceResult.bounceHorizontally)
         {
             m_currentHorizontalSpeed = hitEnemy ? m_currentHorizontalSpeed += 2 : m_currentHorizontalSpeed;
             m_lastInputDirection.x *= -1;
         }
-        else if (m_bounceResult.bounceVertically)
+        else if (m_bounceResult.bounceVertically && !m_bounceless)
         {
             //Bounce a bit less everytime
-            m_currentVerticalSpeed = hitEnemy ? m_currentVerticalSpeed * -1.5f : m_currentVerticalSpeed * -0.75f;
+            m_currentVerticalSpeed = hitEnemy ? m_currentVerticalSpeed * -1.5f : m_currentVerticalSpeed * -0.6f;
+
+            m_lastPositionAfterHittingGround = colliderHit.transform.position;
+
+            m_currentVerticalSpeed = Mathf.Abs(m_currentVerticalSpeed) < 1.4f ? 0 : m_currentVerticalSpeed;
 
         }
     }
 
     void ApplyGravityIfNotGrounded()
     {
-       
         //TODO when happy with testing values, move initialization to start, to avoid uneccessary operations
 
         //Constant rate of change for gravity pulling player down
         float gravityAccRate = (m_terminalVelocity / m_timeToReachTerminalVelocity) * m_gravityScalar;
         gravityAccRate *= Time.deltaTime;
+
+        float distanceToGround = Vector2.Distance(transform.position, m_lastPositionAfterHittingGround);
+        //m_bounceless = Mathf.Abs(m_currentVerticalSpeed) < gravityAccRate * 3f && distanceToGround <= m_jumpBufferminDistance;
         if (!m_grounded)
         {
             m_currentVerticalSpeed -= gravityAccRate;
@@ -394,10 +418,10 @@ public class MergedPlayerController : PlayerController_Base
         }
 
         //Stop bouncing if player is moving vertically slowly enough and player intention is to be grounded
-        if (Mathf.Abs(m_currentVerticalSpeed) < gravityAccRate * 10f && m_grounded)
+        if (m_bounceless && m_currentController == PlayerControllers.BOUNCY)
         {
             m_grounded = true;
-            //m_bounceless = true;
+            m_bounceless = true;
             m_currentVerticalSpeed = 0;
 
             //if (m_bounceless)
