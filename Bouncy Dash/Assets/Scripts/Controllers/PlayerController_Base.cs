@@ -14,7 +14,8 @@ public class PlayerController_Base : MonoBehaviour
     //Jump properties
     [Header("Jump")]
     [SerializeField] protected float m_minJumpheight = 6f;
-    [SerializeField] protected float m_maxJumpScalar = 1.5f;
+    [Range(1, 4)]
+    [SerializeField] protected float m_maxJumpScalar = 2f;
     [SerializeField] protected float m_timeToReachApex = 1f;
     [SerializeField] protected float m_jumpChargeTime = 2f;
     protected float m_currentJumpHeight;
@@ -81,7 +82,7 @@ public class PlayerController_Base : MonoBehaviour
         m_animator = GetComponentInChildren<Animator>();
 
         //Set jump limitations
-        m_maxJumpHeight = m_minJumpheight * m_maxJumpScalar;
+        //m_maxJumpHeight = m_minJumpheight * m_maxJumpScalar;
         m_currentJumpHeight = m_minJumpheight;
     }
 
