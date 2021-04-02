@@ -18,6 +18,11 @@ public class MergedPlayerController : PlayerController_Base
     [SerializeField]
     private float m_btimeToReachMaxSpeed;
 
+    [Header("Bouncing off enemies")]
+    [Range(1, 4)]
+    [SerializeField]
+    private float m_enemyBounceScalar = 1.7f;
+
     [Header("Swap Properties")]
     [SerializeField]
     private float m_swapCooldown = 1f;
@@ -62,7 +67,7 @@ public class MergedPlayerController : PlayerController_Base
     CapsuleCollider2D m_capsuleCollider;
     SpriteRenderer m_sr;
     ParticleSystem m_ps;
-    Vavi m_vb;
+    //Vavi m_vb;
 
     [Header("Analytics")]
     //Analytics stuff, no touchie
@@ -102,11 +107,13 @@ public class MergedPlayerController : PlayerController_Base
         //Get other components
         m_sr = GetComponentInChildren<SpriteRenderer>();
         m_ps = GetComponentInChildren<ParticleSystem>();
-        m_vb = Vavi.GetVavi(1);
-        m_vb.Show(false);
+        //m_vb = Vavi.GetVavi(1);
+        //m_vb.Show(false);
         m_capsuleCollider = GetComponent<CapsuleCollider2D>();
 
         m_grounded = false;
+
+        m_maxJumpHeight = m_bminJumpHeight * m_maxJumpScalar;
     }
 
     void UpdateCurrentController()
@@ -161,15 +168,7 @@ public class MergedPlayerController : PlayerController_Base
         {
 
         }
-        if (m_currentController == PlayerControllers.BOUNCY)
-        {
-            float gravityAccRate = (m_terminalVelocity / m_timeToReachTerminalVelocity) * m_gravityScalar;
-            gravityAccRate *= Time.deltaTime;
-            float distanceToGround = Vector2.Distance(transform.position, m_lastPositionAfterHittingGround);
-
-            Debug.Log(Mathf.Abs(m_currentVerticalSpeed) + " VS " + gravityAccRate * 6f + " Distance to ground " + distanceToGround);
-            Debug.Log(m_currentVerticalSpeed);
-        }
+       
         
     }
 
@@ -199,6 +198,9 @@ public class MergedPlayerController : PlayerController_Base
                 //update horizontal and vertical velocity
                 m_currentHorizontalVelocity = m_lastInputDirection * m_currentHorizontalSpeed;
                 m_currentVerticalVelocity = Vector2.up * (m_currentVerticalSpeed);
+
+                if(m_currentController == PlayerControllers.BOUNCY) Debug.Log(m_currentVerticalSpeed);
+
 
                 m_currentTotalVelocity = m_currentHorizontalVelocity + m_currentVerticalVelocity;
 
@@ -353,44 +355,49 @@ public class MergedPlayerController : PlayerController_Base
         bool jumpHeld = (m_grounded && InputManager.JumpHeld());
         bool isBouncy = m_currentController == PlayerControllers.BOUNCY;
 
-        float jumpHeight = isBouncy ? m_minJumpheight : m_currentJumpHeight;
+        float jumpHeight = isBouncy ? m_currentJumpHeight : m_minJumpheight;
 
-        if (canJump)
+        bool readyToJump = m_currentVerticalSpeed == 0;
+
+        if (readyToJump)
         {
-            m_currentVerticalSpeed = (2 * jumpHeight) / m_timeToReachApex;
-            m_grounded = false;
-            m_currentJumpHeight = m_minJumpheight;
-            m_bounceless = false;
-        }
-        else if (isBouncy && jumpHeld)
-        {
-            //TODO optimize the deltaTime calculation
-            float jumpAcc = ((m_maxJumpHeight - m_minJumpheight) / m_jumpChargeTime) * Time.fixedDeltaTime;
-            m_currentJumpHeight += jumpAcc;
-
-            m_currentJumpHeight = Mathf.Clamp(m_currentJumpHeight, m_minJumpheight, m_maxJumpHeight);
-
-           
-
-            bool atJumpPeek = (m_currentJumpHeight >= m_maxJumpHeight && !m_ps.isEmitting);
-            float alpha = m_currentJumpHeight / m_maxJumpHeight;
-
-            if (atJumpPeek)
+            if (canJump)
             {
-                m_vb.Show(false);
-                m_ps.Play();
+                m_currentVerticalSpeed = (2 * jumpHeight) / m_timeToReachApex;
+                m_grounded = false;
+                m_currentJumpHeight = isBouncy? m_currentVerticalSpeed : m_minJumpheight;
+                m_bounceless = false;
+            }
+            else if (isBouncy && jumpHeld)
+            {
+                //TODO optimize the deltaTime calculation
+                float jumpAcc = ((m_maxJumpHeight - m_bminJumpHeight) / m_jumpChargeTime) * Time.fixedDeltaTime;
+                m_currentJumpHeight += jumpAcc;
+
+                m_currentJumpHeight = Mathf.Clamp(m_currentJumpHeight, m_bminJumpHeight, m_maxJumpHeight);
+
+
+                bool atJumpPeek = (m_currentJumpHeight >= m_maxJumpHeight && !m_ps.isEmitting);
+                float alpha = m_currentJumpHeight / m_maxJumpHeight;
+
+                if (atJumpPeek)
+                {
+                    //m_vb.Show(false);
+                    m_ps.Play();
+                }
+                else
+                {
+                    //m_vb.ValueSet(alpha);
+                    //m_vb.Show(true);
+                }
             }
             else
             {
-                m_vb.ValueSet(alpha);
-                m_vb.Show(true);
+                m_ps.Stop();
+                //m_vb.Show(false);
             }
         }
-        else
-        {
-            m_ps.Stop();
-            m_vb.Show(false);
-        }
+       
     }
 
     void CheckBorderReaction(Collider2D colliderHit, Enemy_Base hitEnemy = null)
@@ -407,13 +414,15 @@ public class MergedPlayerController : PlayerController_Base
         else if (m_bounceResult.bounceVertically && !m_bounceless)
         {
             //Bounce a bit less everytime
-            m_currentVerticalSpeed = hitEnemy ? m_currentVerticalSpeed * -1.5f : m_currentVerticalSpeed * -0.6f;
+            m_currentVerticalSpeed = hitEnemy ? m_currentVerticalSpeed * -2.5f : m_currentVerticalSpeed * -0.6f;
 
             m_lastPositionAfterHittingGround = colliderHit.transform.position;
 
             m_currentVerticalSpeed = Mathf.Abs(m_currentVerticalSpeed) < 1.4f ? 0 : m_currentVerticalSpeed;
 
         }
+
+        m_currentJumpHeight = m_currentController == PlayerControllers.DEFAULT ? m_minJumpheight : m_bminJumpHeight;
     }
 
     void ApplyGravityIfNotGrounded()
