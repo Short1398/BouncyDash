@@ -108,10 +108,12 @@ public class BouncyController : PlayerController_Base
     [SerializeField] AnalyticsEventTracker stunEvent;
     public string bounceName;
     public float bounceUpwardVelocity;
-    List<string> chainEnemies;
+    public float bounceHorizontalVelocity;
+    public List<string> chainEnemies;
     public string chain;
     public string stunName;
     AnalyticsConfig aC;
+    
 
 
     // Start is called before the first frame update
@@ -426,13 +428,15 @@ public class BouncyController : PlayerController_Base
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
    public bHitResults ReactToBorders(Collider2D colliderHit)
-    {
 
+    {
+        MergedPlayerController merged = GetComponent<MergedPlayerController>();
         bHitResults result = new bHitResults();
         if (!m_bounceless)
         {
             foreach (RaycastHit2D sensorHit in m_sensorBuffer)
             {
+
                 string obstacleName = colliderHit.transform.name;
                 string sensorHitName = sensorHit.transform.name;
                 if (obstacleName == sensorHitName)
@@ -446,6 +450,7 @@ public class BouncyController : PlayerController_Base
                         result.bounceVertically = true;
                     }
                 }
+                
             }
         }
         //    //Up or down sensor were hit
@@ -456,23 +461,38 @@ public class BouncyController : PlayerController_Base
 
         //        result.bounceVertically = true;
 
-        //    }
-        //}
-        ////Left or right sensor were hit
-        //if (m_sensors.RSensor || m_sensors.LSensor)
-        //{
-        //    //m_currentHorizontalSpeed = hitENemy ? m_currentHorizontalSpeed += 2 : m_currentHorizontalSpeed;
-        //    m_lastInputDirection.x *= -1;
+
+        //bounceName = hitENemy.name;
+        //bounceUpwardVelocity = m_currentVerticalSpeed;
+        //bounceHorizontalVelocity = m_currentHorizontalSpeed; //vars
+
 
         //    result.bounceHorizontally = true;
         //#region bounce analytics
-        //if (hitENemy)
-        //{
+        //
 
         //    bounceName = hitENemy.name;
         //    bounceUpwardVelocity = m_currentVerticalSpeed;
 
+
         //    chainEnemies.Add(bounceName);
+        /*if (hitENemy)
+            {
+            bounceEvent.TriggerEvent();
+                if (aC.debug) print("bounce event fired: " + bounceName + " at " + bounceUpwardVelocity);
+            }
+            else if (aC.debug)
+            {
+                print("bounce event not fired: " + bounceName + " at " + bounceUpwardVelocity);
+            }
+        
+        else
+        {
+            m_grounded = merged.m_grounded;
+            if (m_grounded)
+            {
+                if (chainEnemies.Count > 1)
+                {*/
 
         //    if (aC.gathering)
         //    {

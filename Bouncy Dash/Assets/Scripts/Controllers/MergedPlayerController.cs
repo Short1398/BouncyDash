@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 [RequireComponent(typeof(WalkController), typeof(WalkController))]
 public class MergedPlayerController : PlayerController_Base
@@ -61,7 +62,15 @@ public class MergedPlayerController : PlayerController_Base
     CapsuleCollider2D m_capsuleCollider;
     SpriteRenderer m_sr;
     ParticleSystem m_ps;
-    ValueBar m_vb;
+    Vavi m_vb;
+
+    [Header("Analytics")]
+    //Analytics stuff, no touchie
+    [SerializeField] AnalyticsEventTracker stunEvent;
+    public string stunName;
+    AnalyticsConfig aC;
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -85,13 +94,16 @@ public class MergedPlayerController : PlayerController_Base
         m_currentController = PlayerControllers.DEFAULT;
         m_currentBouncyState = BouncyStates.FREE_ROAMING;
 
+        aC = FindObjectOfType<AnalyticsConfig>();
+
         //Get controllers component reference
         m_bController = GetComponent<BouncyController>();
         m_walkController = GetComponent<WalkController>();
         //Get other components
         m_sr = GetComponentInChildren<SpriteRenderer>();
         m_ps = GetComponentInChildren<ParticleSystem>();
-        m_vb = GetComponentInChildren<ValueBar>();
+        m_vb = Vavi.GetVavi(1);
+        m_vb.Show(false);
         m_capsuleCollider = GetComponent<CapsuleCollider2D>();
 
         m_grounded = false;
@@ -236,16 +248,16 @@ public class MergedPlayerController : PlayerController_Base
                 m_currentHorizontalSpeed = 0;
                 //m_stunTimerHandler = Time.time + m_stunnedTime;
 
-                //stunName = collision.gameObject.name;
-                //if (aC.gathering)
-                //{
-                //    stunEvent.TriggerEvent();
-                //    if (aC.debug) print("Stun Event fired: " + stunName);
-                //}
-                //else if (aC.debug)
-                //{
-                //    print("Stun Event not fired: " + stunName);
-                //}
+                stunName = collision.gameObject.name;
+                if (aC.gathering)
+                {
+                    stunEvent.TriggerEvent();
+                    if (aC.debug) print("Stun Event fired: " + stunName);
+                }
+                else if (aC.debug)
+                {
+                    print("Stun Event not fired: " + stunName);
+                }
 
             }
         }
@@ -358,23 +370,26 @@ public class MergedPlayerController : PlayerController_Base
 
             m_currentJumpHeight = Mathf.Clamp(m_currentJumpHeight, m_minJumpheight, m_maxJumpHeight);
 
+           
 
             bool atJumpPeek = (m_currentJumpHeight >= m_maxJumpHeight && !m_ps.isEmitting);
             float alpha = m_currentJumpHeight / m_maxJumpHeight;
 
             if (atJumpPeek)
             {
+                m_vb.Show(false);
                 m_ps.Play();
             }
             else
             {
-                m_vb.Display(alpha);
+                m_vb.ValueSet(alpha);
+                m_vb.Show(true);
             }
         }
         else
         {
             m_ps.Stop();
-            m_vb.Hide();
+            m_vb.Show(false);
         }
     }
 
@@ -454,5 +469,7 @@ public class MergedPlayerController : PlayerController_Base
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
     //Methods for Bouncy component
+
+
 
 }

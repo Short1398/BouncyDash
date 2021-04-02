@@ -50,8 +50,8 @@ public class PlayerController_Base : MonoBehaviour
 
     //Basic direction and position tracking properties
     protected Vector2 m_currentTotalVelocity;
-    protected Vector2 m_currentHorizontalVelocity;
-    protected Vector2 m_currentVerticalVelocity;
+    public Vector2 m_currentHorizontalVelocity;
+    public Vector2 m_currentVerticalVelocity;
     protected Vector2 m_lastInputDirection;
     protected Vector2 m_lastCalculatedVelocity;
 
@@ -66,7 +66,7 @@ public class PlayerController_Base : MonoBehaviour
     protected const string THREAT = "Threat";
 
     //Bool checks
-    protected bool m_grounded;
+    public bool m_grounded;
     protected bool m_isDashing;
 
     //Components
