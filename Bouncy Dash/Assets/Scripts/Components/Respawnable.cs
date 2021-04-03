@@ -6,8 +6,7 @@ public class Respawnable : MonoBehaviour
 {
     
     Vector3 initialPos;
-    RespawnManager rM;
-    
+    RespawnManager rM;    
 
     // Start is called before the first frame update
     void Start()

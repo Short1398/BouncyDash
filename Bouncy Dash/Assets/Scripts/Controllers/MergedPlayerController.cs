@@ -27,6 +27,21 @@ public class MergedPlayerController : PlayerController_Base
     [SerializeField]
     private float m_swapCooldown = 1f;
 
+    [Header("Audio Sources")]
+    //Audio Sources
+    [SerializeField]
+    private AudioSource grubSound;
+    [SerializeField]
+    private AudioSource beetleSound;
+    [SerializeField]
+    private AudioSource waspSound;
+    [SerializeField]
+    private AudioSource jumpSound;
+    [SerializeField]
+    private AudioSource hurtSound;
+    [SerializeField]
+    private AudioSource moveSound;
+
     public enum PlayerControllers
     {
         BOUNCY,
@@ -75,8 +90,6 @@ public class MergedPlayerController : PlayerController_Base
     public string stunName;
     AnalyticsConfig aC;
 
-
-
     // Start is called before the first frame update
     void Start()
     {
@@ -114,6 +127,16 @@ public class MergedPlayerController : PlayerController_Base
         m_grounded = false;
 
         m_maxJumpHeight = m_bminJumpHeight * m_maxJumpScalar;
+
+        //Audio Sources
+        AudioSource[] allAudioSources = GetComponents<AudioSource>();
+        grubSound = allAudioSources[0];
+        beetleSound = allAudioSources[1];
+        waspSound = allAudioSources[2];
+        jumpSound = allAudioSources[3];
+        hurtSound = allAudioSources[4];
+        moveSound = allAudioSources[5];
+
     }
 
     void UpdateCurrentController()
@@ -227,6 +250,20 @@ public class MergedPlayerController : PlayerController_Base
                 Enemy_Base hitEnemy = collision.GetComponent<Enemy_Base>();
                 if (hitEnemy)
                 {
+                    //Did we hit a grub enemy?
+                    if (collision.GetComponent<WalkingEnemy>())
+                    {
+                        grubSound.Play();
+                    }
+                    //Did we hit a beetle enemy?
+                    if (collision.GetComponent<TurretController>())
+                    {
+                        beetleSound.Play();
+                    }
+                    if (collision.GetComponent<HornetController>())
+                    {
+                        waspSound.Play();
+                    }
 
                     if (collision.GetComponent<Respawnable>())
                     {
