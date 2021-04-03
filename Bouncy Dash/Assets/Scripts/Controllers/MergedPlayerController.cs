@@ -260,6 +260,7 @@ public class MergedPlayerController : PlayerController_Base
                     {
                         beetleSound.Play();
                     }
+                    //Did we hit a hornet enemy?
                     if (collision.GetComponent<HornetController>())
                     {
                         waspSound.Play();
@@ -282,6 +283,9 @@ public class MergedPlayerController : PlayerController_Base
             //Did we hit anything that threatens the player?
             else if (collision.gameObject.layer == LayerMask.NameToLayer(THREAT) && m_currentController != PlayerControllers.STUNNED)
             {
+                //Play audio for when player takes damage
+                //hurtSound.Play();
+
                 //TODO take damage
                 //m_currentController = PlayerControllers.STUNNED;
                 m_currentHorizontalSpeed = 0;
@@ -404,6 +408,9 @@ public class MergedPlayerController : PlayerController_Base
                 m_grounded = false;
                 m_currentJumpHeight = isBouncy? m_currentVerticalSpeed : m_minJumpheight;
                 m_bounceless = false;
+
+                //Play jump audio
+                jumpSound.Play();
             }
             else if (isBouncy && jumpHeld)
             {
