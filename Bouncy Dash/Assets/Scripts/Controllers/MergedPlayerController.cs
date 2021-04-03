@@ -193,18 +193,19 @@ public class MergedPlayerController : PlayerController_Base
         {
             bool triedDashing = m_walkController.DashAtttempted();
             UpdateDash(triedDashing);
-
+            m_sr.color = Color.white;
             //Collision polish
         }
         else if (m_currentController == PlayerControllers.BOUNCY)
         {
             m_bController.SetSensors();
-            //Color lerp
+            m_sr.color = Color.white;
+
 
         }
         else if (m_currentController == PlayerControllers.STUNNED)
         {
-
+            m_sr.color = Color.red;
         }
 
 
@@ -225,7 +226,10 @@ public class MergedPlayerController : PlayerController_Base
 
     private void FixedUpdate()
     {
-        if (!m_rb) return;
+        if (!m_rb) {
+            print("not working anyways");
+            return;
+        } 
 
         transform.position = m_rb.position;
         if (m_currentController != PlayerControllers.STUNNED)
@@ -237,16 +241,14 @@ public class MergedPlayerController : PlayerController_Base
                 m_currentHorizontalVelocity = m_lastInputDirection * m_currentHorizontalSpeed;
                 m_currentVerticalVelocity = Vector2.up * (m_currentVerticalSpeed);
 
-                //if (m_currentController == PlayerControllers.BOUNCY) Debug.Log(m_currentVerticalSpeed);
+                //if (m_currentController == PlayerControllers.BOUNCY) Debug.Log(m_currentVerticalVelocity);
 
 
                 m_currentTotalVelocity = m_currentHorizontalVelocity + m_currentVerticalVelocity;
 
                 m_rb.velocity = m_currentTotalVelocity;
             }
-
         }
-
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -295,8 +297,6 @@ public class MergedPlayerController : PlayerController_Base
                     }
 
                 }
-
-                
 
             }
             //Did we hit anything that threatens the player?
@@ -541,7 +541,7 @@ public class MergedPlayerController : PlayerController_Base
             print("not enemy");
         }
 
-
+        
         if (m_bounceResult.bounceHorizontally)
         {
             m_currentHorizontalSpeed = hitEnemy ? m_currentHorizontalSpeed += 2 : m_currentHorizontalSpeed;
@@ -549,6 +549,11 @@ public class MergedPlayerController : PlayerController_Base
         }
         else if (m_bounceResult.bounceVertically && !m_bounceless)
         {
+            if (hitEnemy)
+            {
+                print(m_currentVerticalSpeed);
+            }
+
             //Bounce a bit less everytime
             m_currentVerticalSpeed = hitEnemy ? m_currentVerticalSpeed * -2.5f : m_currentVerticalSpeed * -0.6f;
 
@@ -556,6 +561,11 @@ public class MergedPlayerController : PlayerController_Base
 
             m_currentVerticalSpeed = Mathf.Abs(m_currentVerticalSpeed) < 1.4f ? 0 : m_currentVerticalSpeed;
 
+            if (hitEnemy)
+            {
+                print(m_currentVerticalSpeed);
+                print(m_currentVerticalVelocity);
+            }
         }
 
         m_currentJumpHeight = m_currentController == PlayerControllers.DEFAULT ? m_minJumpheight : m_bminJumpHeight;
