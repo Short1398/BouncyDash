@@ -410,10 +410,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_timeToReachMaxSpeed: 0.2
   m_maxDefaultSpeed: 6
-  m_minJumpheight: 9
-  m_maxJumpScalar: 8
+  m_minJumpheight: 5.5
+  m_maxJumpScalar: 9.8
   m_timeToReachApex: 1
-  m_jumpChargeTime: 2
+  m_jumpChargeTime: 1
   m_gravityScalar: 1.5
   m_timeToReachTerminalVelocity: 1
   m_terminalVelocity: 22
@@ -424,7 +424,7 @@ MonoBehaviour:
   m_currentHorizontalVelocity: {x: 0, y: 0}
   m_currentVerticalVelocity: {x: 0, y: 0}
   m_grounded: 0
-  m_bminJumpHeight: 5
+  m_bminJumpHeight: 0.78
   m_jumpBufferminDistance: 1
   m_maxBHorizontalSpeed: 10
   m_btimeToReachMaxSpeed: 1
@@ -436,7 +436,14 @@ MonoBehaviour:
   jumpSound: {fileID: -3352369859039044876}
   hurtSound: {fileID: 8332338620353034618}
   moveSound: {fileID: 4893019051854459983}
-  stunEvent: {fileID: 0}
+  bounceEvent: {fileID: 137545182795483992}
+  chainEvent: {fileID: 4397301993261414641}
+  stunEvent: {fileID: 8092232658244456367}
+  bounceName: 
+  bounceUpwardVelocity: 0
+  bounceHorizontalVelocity: 0
+  chainEnemies: []
+  chain: 
   stunName: 
 --- !u!114 &2430419791198572797
 MonoBehaviour:

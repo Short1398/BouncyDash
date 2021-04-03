@@ -82,11 +82,18 @@ public class MergedPlayerController : PlayerController_Base
     CapsuleCollider2D m_capsuleCollider;
     SpriteRenderer m_sr;
     ParticleSystem m_ps;
-    //Vavi m_vb;
+    Vavi m_vb;
 
     [Header("Analytics")]
     //Analytics stuff, no touchie
+    [SerializeField] AnalyticsEventTracker bounceEvent;
+    [SerializeField] AnalyticsEventTracker chainEvent;
     [SerializeField] AnalyticsEventTracker stunEvent;
+    public string bounceName;
+    public float bounceUpwardVelocity;
+    public float bounceHorizontalVelocity;
+    public List<string> chainEnemies;
+    public string chain;
     public string stunName;
     AnalyticsConfig aC;
 
@@ -102,9 +109,17 @@ public class MergedPlayerController : PlayerController_Base
     // Update is called once per frame
     void Update()
     {
-        if (!m_rb) throw new MissingComponentException(gameObject.name + " is missing the rigibody component, all movement relies on the rigidbody component"); 
-        
+        if (!m_rb) throw new MissingComponentException(gameObject.name + " is missing the rigibody component, all movement relies on the rigidbody component");
+
         UpdateCurrentController();
+
+
+        //HARD CODED FIX SORRY
+        if (m_rb.position.y < -16)
+        {
+            transform.position = new Vector3(transform.position.x, 4, transform.position.z);
+            m_currentVerticalSpeed = 0;
+        }
     }
 
     void InitializePlayerController()
@@ -120,8 +135,8 @@ public class MergedPlayerController : PlayerController_Base
         //Get other components
         m_sr = GetComponentInChildren<SpriteRenderer>();
         m_ps = GetComponentInChildren<ParticleSystem>();
-        //m_vb = Vavi.GetVavi(1);
-        //m_vb.Show(false);
+        m_vb = Vavi.GetVavi(1);
+        m_vb.Show(false);
         m_capsuleCollider = GetComponent<CapsuleCollider2D>();
 
         m_grounded = false;
@@ -141,15 +156,15 @@ public class MergedPlayerController : PlayerController_Base
 
     void UpdateCurrentController()
     {
-        
+
         //Are we currenty supposed to be grounded?
         float castDistance = m_grounded ? (m_capsuleCollider.size.y / 2) + 0.6f : Mathf.Abs(m_rb.velocity.y);
 
-        
-        
+
+
         RaycastHit2D groundHit = Physics2D.Raycast(transform.position, -transform.up, castDistance, LayerMask.GetMask(OBSTACLE));
 
-        
+
         if (groundHit && m_rb.velocity.y < 0)
         {
             m_placeOnGroundFlag = true;
@@ -185,14 +200,14 @@ public class MergedPlayerController : PlayerController_Base
         {
             m_bController.SetSensors();
             //Color lerp
-           
+
         }
         else if (m_currentController == PlayerControllers.STUNNED)
         {
 
         }
-       
-        
+
+
     }
 
     private void OnDrawGizmos()
@@ -205,7 +220,7 @@ public class MergedPlayerController : PlayerController_Base
             Vector2 endVector = transform.position + new Vector3(0, endPoint);
             Gizmos.DrawLine(transform.position, endVector);
         }
-       
+
     }
 
     private void FixedUpdate()
@@ -222,16 +237,16 @@ public class MergedPlayerController : PlayerController_Base
                 m_currentHorizontalVelocity = m_lastInputDirection * m_currentHorizontalSpeed;
                 m_currentVerticalVelocity = Vector2.up * (m_currentVerticalSpeed);
 
-                if(m_currentController == PlayerControllers.BOUNCY) Debug.Log(m_currentVerticalSpeed);
+                //if (m_currentController == PlayerControllers.BOUNCY) Debug.Log(m_currentVerticalSpeed);
 
 
                 m_currentTotalVelocity = m_currentHorizontalVelocity + m_currentVerticalVelocity;
 
                 m_rb.velocity = m_currentTotalVelocity;
             }
-           
+
         }
-        
+
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -248,6 +263,10 @@ public class MergedPlayerController : PlayerController_Base
                     m_lastPositionAfterHittingGround = m_rb.position;
                 }
                 Enemy_Base hitEnemy = collision.GetComponent<Enemy_Base>();
+
+                CheckBorderReaction(collision, hitEnemy);
+
+
                 if (hitEnemy)
                 {
                     //Did we hit a grub enemy?
@@ -277,7 +296,7 @@ public class MergedPlayerController : PlayerController_Base
 
                 }
 
-                CheckBorderReaction(collision, hitEnemy);
+                
 
             }
             //Did we hit anything that threatens the player?
@@ -304,8 +323,6 @@ public class MergedPlayerController : PlayerController_Base
 
             }
         }
-
-
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -338,7 +355,7 @@ public class MergedPlayerController : PlayerController_Base
     {
         //Sprite renderer update
         m_sr.flipX = m_currentTotalVelocity.x > 0 ? true : false;
-       
+
 
         if (m_currentController == PlayerControllers.DEFAULT)
         {
@@ -406,7 +423,7 @@ public class MergedPlayerController : PlayerController_Base
             {
                 m_currentVerticalSpeed = (2 * jumpHeight) / m_timeToReachApex;
                 m_grounded = false;
-                m_currentJumpHeight = isBouncy? m_currentVerticalSpeed : m_minJumpheight;
+                m_currentJumpHeight = isBouncy ? m_currentVerticalSpeed : m_minJumpheight;
                 m_bounceless = false;
 
                 //Play jump audio
@@ -416,6 +433,7 @@ public class MergedPlayerController : PlayerController_Base
             {
                 //TODO optimize the deltaTime calculation
                 float jumpAcc = ((m_maxJumpHeight - m_bminJumpHeight) / m_jumpChargeTime) * Time.fixedDeltaTime;
+
                 m_currentJumpHeight += jumpAcc;
 
                 m_currentJumpHeight = Mathf.Clamp(m_currentJumpHeight, m_bminJumpHeight, m_maxJumpHeight);
@@ -426,22 +444,21 @@ public class MergedPlayerController : PlayerController_Base
 
                 if (atJumpPeek)
                 {
-                    //m_vb.Show(false);
+                    m_vb.Show(false);
                     m_ps.Play();
                 }
                 else
                 {
-                    //m_vb.ValueSet(alpha);
-                    //m_vb.Show(true);
+                    m_vb.ValueSet(alpha);
+                    m_vb.Show(true);
                 }
             }
             else
             {
                 m_ps.Stop();
-                //m_vb.Show(false);
+                m_vb.Show(false);
             }
         }
-       
     }
 
     void CheckBorderReaction(Collider2D colliderHit, Enemy_Base hitEnemy = null)
@@ -449,6 +466,81 @@ public class MergedPlayerController : PlayerController_Base
         if (m_currentController != PlayerControllers.BOUNCY) return;
 
         m_bounceResult = m_bController.ReactToBorders(colliderHit);
+
+        #region Bounce and Chain Analytics
+
+        if (hitEnemy)
+        {
+            //bounce
+            bounceName = hitEnemy.name;
+            bounceUpwardVelocity = m_currentVerticalSpeed;
+            bounceHorizontalVelocity = m_currentHorizontalSpeed;
+            //chain
+            chainEnemies.Add(bounceName);
+
+            if (aC.gathering)
+            {
+                bounceEvent.TriggerEvent();
+                if (aC.debug) print("bounce event fired: " + bounceName + " at " + bounceUpwardVelocity);
+            }
+            else if (aC.debug)
+            {
+                print("bounce event not fired: " + bounceName + " at " + bounceUpwardVelocity);
+            }
+        }
+        else
+        {
+            if (m_grounded)
+            {
+                if (chainEnemies.Count > 1)
+                {
+                    chain = "";
+                    for (int i = 0; i < chainEnemies.Count; i++)
+                    {
+                        chain += chainEnemies[i];
+                        chain += " ";
+                    }
+
+                    if (aC.gathering)
+                    {
+                        if (aC.debug)
+                        {
+                            chainEvent.TriggerEvent();
+                            print("chain event fired: " + chain);
+                        }
+
+                    }
+                    else if (aC.debug)
+                    {
+                        print("chain event not fired: " + chain);
+                    }
+
+                }
+                else if (aC.debug)
+                {
+
+                    print("no chain");
+
+                    chainEnemies.Clear();
+
+                }
+            }
+        }
+
+        #endregion
+
+        if (hitEnemy)
+        {
+
+            Debug.Log("horizontal " + m_bounceResult.bounceHorizontally + " on " + hitEnemy);
+            Debug.Log("vertical " + m_bounceResult.bounceVertically + " on " + hitEnemy);
+        }
+
+        else
+        {
+            print("not enemy");
+        }
+
 
         if (m_bounceResult.bounceHorizontally)
         {
@@ -469,60 +561,59 @@ public class MergedPlayerController : PlayerController_Base
         m_currentJumpHeight = m_currentController == PlayerControllers.DEFAULT ? m_minJumpheight : m_bminJumpHeight;
     }
 
-    void ApplyGravityIfNotGrounded()
+
+void ApplyGravityIfNotGrounded()
+{
+    //TODO when happy with testing values, move initialization to start, to avoid uneccessary operations
+
+    //Constant rate of change for gravity pulling player down
+    float gravityAccRate = (m_terminalVelocity / m_timeToReachTerminalVelocity) * m_gravityScalar;
+    gravityAccRate *= Time.deltaTime;
+
+    float distanceToGround = Vector2.Distance(transform.position, m_lastPositionAfterHittingGround);
+    //m_bounceless = Mathf.Abs(m_currentVerticalSpeed) < gravityAccRate * 3f && distanceToGround <= m_jumpBufferminDistance;
+    if (!m_grounded)
     {
-        //TODO when happy with testing values, move initialization to start, to avoid uneccessary operations
-
-        //Constant rate of change for gravity pulling player down
-        float gravityAccRate = (m_terminalVelocity / m_timeToReachTerminalVelocity) * m_gravityScalar;
-        gravityAccRate *= Time.deltaTime;
-
-        float distanceToGround = Vector2.Distance(transform.position, m_lastPositionAfterHittingGround);
-        //m_bounceless = Mathf.Abs(m_currentVerticalSpeed) < gravityAccRate * 3f && distanceToGround <= m_jumpBufferminDistance;
-        if (!m_grounded)
-        {
-            m_currentVerticalSpeed -= gravityAccRate;
-            //m_bounceless = false;
-        }
-
-        //Stop bouncing if player is moving vertically slowly enough and player intention is to be grounded
-        if (m_bounceless && m_currentController == PlayerControllers.BOUNCY)
-        {
-            m_grounded = true;
-            m_bounceless = true;
-            m_currentVerticalSpeed = 0;
-
-            //if (m_bounceless)
-            //{
-            //    m_rb.position = new Vector2(m_rb.position.x, m_lastPositionAfterHittinGround.y + 0.15f);
-            //}
-            ////Reset handler
-            //m_groundBufferHandler = Time.time + m_groundBufferTime;
-        }
+        m_currentVerticalSpeed -= gravityAccRate;
+        //m_bounceless = false;
     }
 
-    void UpdateDash(bool dashAttempted = false)
+    //Stop bouncing if player is moving vertically slowly enough and player intention is to be grounded
+    if (m_bounceless && m_currentController == PlayerControllers.BOUNCY)
     {
-        m_isDashing = Time.time > m_timerHandler.dashHandler ? false : true;
-        if (dashAttempted && !m_isDashing)
-        {
-            m_isDashing = true;
-            m_currentHorizontalSpeed = m_maxDashSpeed;
+        m_grounded = true;
+        m_bounceless = true;
+        m_currentVerticalSpeed = 0;
 
-            m_timerHandler.dashHandler = Time.time + m_timeToDash;
-        }
-        else if (m_isDashing)
-        {
-            float roc = (m_maxDashSpeed / m_timeToDash) * Time.deltaTime;
-
-            m_currentHorizontalSpeed -= roc;
-        }
+        //if (m_bounceless)
+        //{
+        //    m_rb.position = new Vector2(m_rb.position.x, m_lastPositionAfterHittinGround.y + 0.15f);
+        //}
+        ////Reset handler
+        //m_groundBufferHandler = Time.time + m_groundBufferTime;
     }
+}
+
+void UpdateDash(bool dashAttempted = false)
+{
+    m_isDashing = Time.time > m_timerHandler.dashHandler ? false : true;
+    if (dashAttempted && !m_isDashing)
+    {
+        m_isDashing = true;
+        m_currentHorizontalSpeed = m_maxDashSpeed;
+
+        m_timerHandler.dashHandler = Time.time + m_timeToDash;
+    }
+    else if (m_isDashing)
+    {
+        float roc = (m_maxDashSpeed / m_timeToDash) * Time.deltaTime;
+
+        m_currentHorizontalSpeed -= roc;
+    }
+}
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
     //Methods for Bouncy component
-
-
-
+    
 }

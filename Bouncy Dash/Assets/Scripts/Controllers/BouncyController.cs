@@ -434,6 +434,8 @@ public class BouncyController : PlayerController_Base
         bHitResults result = new bHitResults();
         if (!m_bounceless)
         {
+            SetSensors();
+
             foreach (RaycastHit2D sensorHit in m_sensorBuffer)
             {
 
@@ -450,7 +452,6 @@ public class BouncyController : PlayerController_Base
                         result.bounceVertically = true;
                     }
                 }
-                
             }
         }
         //    //Up or down sensor were hit
@@ -461,87 +462,7 @@ public class BouncyController : PlayerController_Base
 
         //        result.bounceVertically = true;
 
-
-        //bounceName = hitENemy.name;
-        //bounceUpwardVelocity = m_currentVerticalSpeed;
-        //bounceHorizontalVelocity = m_currentHorizontalSpeed; //vars
-
-
-        //    result.bounceHorizontally = true;
-        //#region bounce analytics
-        //
-
-        //    bounceName = hitENemy.name;
-        //    bounceUpwardVelocity = m_currentVerticalSpeed;
-
-
-        //    chainEnemies.Add(bounceName);
-        /*if (hitENemy)
-            {
-            bounceEvent.TriggerEvent();
-                if (aC.debug) print("bounce event fired: " + bounceName + " at " + bounceUpwardVelocity);
-            }
-            else if (aC.debug)
-            {
-                print("bounce event not fired: " + bounceName + " at " + bounceUpwardVelocity);
-            }
         
-        else
-        {
-            m_grounded = merged.m_grounded;
-            if (m_grounded)
-            {
-                if (chainEnemies.Count > 1)
-                {*/
-
-        //    if (aC.gathering)
-        //    {
-
-        //        bounceEvent.TriggerEvent();
-        //        if (aC.debug) print("bounce event fired: " + bounceName + " at " + bounceUpwardVelocity);
-        //    }
-        //    else if (aC.debug)
-        //    {
-        //        print("bounce event not fired: " + bounceName + " at " + bounceUpwardVelocity);
-        //    }
-        //}
-        //else
-        //{
-        //    if (m_grounded)
-        //    {
-        //        if (chainEnemies.Count > 1)
-        //        {
-
-        //            chain = "";
-        //            for (int i = 0; i < chainEnemies.Count; i++)
-        //            {
-        //                chain += chainEnemies[i];
-        //                chain += " ";
-        //            }
-
-        //            if (aC.debug)
-        //            {
-        //                if (aC.gathering)
-        //                {
-        //                    print("chain event fired: " + chain);
-        //                }
-        //                else
-        //                {
-        //                    print("chain event not fired: " + chain);
-        //                }
-        //            }
-
-        //        }
-        //        else if (aC.debug)
-        //        {
-        //            print("no chain");
-        //        }
-
-        //        chainEnemies.Clear();
-        //    }
-        //}
-
-        //#endregion
         return result;
     }
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
