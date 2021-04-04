@@ -344,7 +344,7 @@ public class Vavi : MonoBehaviour
             negativeImage.type = Image.Type.Simple;
             negativeImage.rectTransform.sizeDelta = new Vector2(0, 0);
 
-            displayTypeOptions.animationSprites = GetSpritesFromClip(displayTypeOptions.animClip);
+            //displayTypeOptions.animationSprites = GetSpritesFromClip(displayTypeOptions.animClip);
             positiveImage.sprite = displayTypeOptions.animationSprites[Mathf.Clamp(Mathf.RoundToInt(value / valueMax * displayTypeOptions.animationSprites.Count) - 1, 0, displayTypeOptions.animationSprites.Count-1)];
 
         }
@@ -404,7 +404,7 @@ public class Vavi : MonoBehaviour
 
     }
 
-
+    /*
     //Sourced from https://answers.unity.com/questions/1245599/how-to-get-all-sprites-used-in-a-2d-animator.html
     public static List<Sprite> GetSpritesFromAnimator(Animator anim)
     {
@@ -432,7 +432,7 @@ public class Vavi : MonoBehaviour
             }
         }
         return _sprites;
-    }
+    }*/
 
     public static Vavi GetVavi(int k)
     {

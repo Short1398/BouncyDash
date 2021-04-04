@@ -204,7 +204,7 @@ public class MergedPlayerController : PlayerController_Base
             UpdateStunnedState();
         }
 
-         if(m_currentController == PlayerControllers.BOUNCY)Debug.Log(m_currentVerticalSpeed);
+         //if(m_currentController == PlayerControllers.BOUNCY)Debug.Log(m_currentVerticalSpeed);
     }
 
     private void OnDrawGizmos()
@@ -557,7 +557,7 @@ public class MergedPlayerController : PlayerController_Base
         if (m_bounceResult.bounceVertically)
         {
             //Bounce a bit less everytime
-            m_currentVerticalSpeed = hitEnemy ? m_currentVerticalSpeed * -2.5f : m_currentVerticalSpeed * -0.6f;
+            m_currentVerticalSpeed = hitEnemy ? m_currentVerticalSpeed * -m_enemyBounceScalar : m_currentVerticalSpeed * -0.6f;
 
             m_lastPositionAfterHittingGround = colliderHit.transform.position;
 

@@ -6,12 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 1b7278f53482e5f4e805c3ca7f4b15ae
+  - enabled: 1
     path: Assets/Scenes/Level 1 - Grubs.unity
     guid: 5e49eea6b55c5554481d71dc7754317e
   - enabled: 1
     path: Assets/Scenes/Level 2 - Wasps.unity
     guid: 2397f7ff8ad87d740a185315a8bf010a
   - enabled: 1
-    path: Assets/Scenes/MainMenu.unity
-    guid: 1b7278f53482e5f4e805c3ca7f4b15ae
+    path: Assets/Scenes/Controls Menu.unity
+    guid: 9ff4df03607026a40a3cdb566aabb541
   m_configObjects: {}
