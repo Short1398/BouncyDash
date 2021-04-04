@@ -193,22 +193,18 @@ public class MergedPlayerController : PlayerController_Base
         {
             bool triedDashing = m_walkController.DashAtttempted();
             UpdateDash(triedDashing);
-            m_sr.color = Color.white;
             //Collision polish
         }
         else if (m_currentController == PlayerControllers.BOUNCY)
         {
             m_bController.SetSensors();
-            m_sr.color = Color.white;
-
-
         }
         else if (m_currentController == PlayerControllers.STUNNED)
         {
-            m_sr.color = Color.red;
+            UpdateStunnedState();
         }
 
-
+         if(m_currentController == PlayerControllers.BOUNCY)Debug.Log(m_currentVerticalSpeed);
     }
 
     private void OnDrawGizmos()
@@ -306,9 +302,10 @@ public class MergedPlayerController : PlayerController_Base
                 //hurtSound.Play();
 
                 //TODO take damage
-                //m_currentController = PlayerControllers.STUNNED;
+                m_currentController = PlayerControllers.STUNNED;
                 m_currentHorizontalSpeed = 0;
-                //m_stunTimerHandler = Time.time + m_stunnedTime;
+                
+                m_stunTimerHandler = Time.time + m_stunnedTime;
 
                 stunName = collision.gameObject.name;
                 if (aC.gathering)
@@ -333,6 +330,14 @@ public class MergedPlayerController : PlayerController_Base
             m_currentVerticalSpeed = 0;
             m_placeOnGroundFlag = false;
         }
+
+        if (collision.gameObject.layer == LayerMask.NameToLayer(THREAT))
+        {
+            m_currentController = PlayerControllers.STUNNED;
+            m_currentHorizontalSpeed = 0;
+            m_stunTimerHandler = Time.time + m_stunnedTime;
+
+        }
     }
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -340,6 +345,8 @@ public class MergedPlayerController : PlayerController_Base
     //Methods for both components
     void UpdateSwapStatus()
     {
+        if (m_currentController == PlayerControllers.STUNNED) return;
+
         bool canSwap = m_handlersWrapper.swapHandler < Time.time && InputManager.SwapPressed();
         if (canSwap)
         {
@@ -532,13 +539,13 @@ public class MergedPlayerController : PlayerController_Base
         if (hitEnemy)
         {
 
-            Debug.Log("horizontal " + m_bounceResult.bounceHorizontally + " on " + hitEnemy);
-            Debug.Log("vertical " + m_bounceResult.bounceVertically + " on " + hitEnemy);
+            //Debug.Log("horizontal " + m_bounceResult.bounceHorizontally + " on " + hitEnemy);
+            //Debug.Log("vertical " + m_bounceResult.bounceVertically + " on " + hitEnemy);
         }
 
         else
         {
-            print("not enemy");
+            //print("not enemy");
         }
 
         
@@ -547,25 +554,14 @@ public class MergedPlayerController : PlayerController_Base
             m_currentHorizontalSpeed = hitEnemy ? m_currentHorizontalSpeed += 2 : m_currentHorizontalSpeed;
             m_lastInputDirection.x *= -1;
         }
-        else if (m_bounceResult.bounceVertically && !m_bounceless)
+        if (m_bounceResult.bounceVertically)
         {
-            if (hitEnemy)
-            {
-                print(m_currentVerticalSpeed);
-            }
-
             //Bounce a bit less everytime
             m_currentVerticalSpeed = hitEnemy ? m_currentVerticalSpeed * -2.5f : m_currentVerticalSpeed * -0.6f;
 
             m_lastPositionAfterHittingGround = colliderHit.transform.position;
 
             m_currentVerticalSpeed = Mathf.Abs(m_currentVerticalSpeed) < 1.4f ? 0 : m_currentVerticalSpeed;
-
-            if (hitEnemy)
-            {
-                print(m_currentVerticalSpeed);
-                print(m_currentVerticalVelocity);
-            }
         }
 
         m_currentJumpHeight = m_currentController == PlayerControllers.DEFAULT ? m_minJumpheight : m_bminJumpHeight;
@@ -620,6 +616,13 @@ void UpdateDash(bool dashAttempted = false)
 
         m_currentHorizontalSpeed -= roc;
     }
+}
+
+void UpdateStunnedState()
+{
+        bool timesUp = Time.time > m_stunTimerHandler;
+        m_currentController = timesUp ? PlayerControllers.DEFAULT : PlayerControllers.STUNNED;
+        m_sr.material.color = timesUp ? Color.white : Color.red;
 }
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//

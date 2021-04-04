@@ -35,7 +35,7 @@ public class PlayerController_Base : MonoBehaviour
     protected float m_stunnedTime = 1f;
     [SerializeField]
     private float m_pushBackForce;
-    float m_stunTimerHandler;
+    protected float m_stunTimerHandler;
 
     //Main dynamic forces
     protected float m_currentHorizontalSpeed;

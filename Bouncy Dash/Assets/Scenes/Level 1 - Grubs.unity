@@ -2138,6 +2138,16 @@ PrefabInstance:
       propertyPath: m_maxJumpScalar
       value: 1.75
       objectReference: {fileID: 0}
+    - target: {fileID: 4735823549834549535, guid: 0eb399d3c3c90fd4e9ea9ad453ca95a8,
+        type: 3}
+      propertyPath: m_bminJumpHeight
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4735823549834549535, guid: 0eb399d3c3c90fd4e9ea9ad453ca95a8,
+        type: 3}
+      propertyPath: m_maxJumpScalar
+      value: 1.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0eb399d3c3c90fd4e9ea9ad453ca95a8, type: 3}
 --- !u!1001 &609702458
