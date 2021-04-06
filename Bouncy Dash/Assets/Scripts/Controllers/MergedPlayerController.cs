@@ -64,9 +64,9 @@ public class MergedPlayerController : PlayerController_Base
 
     TimerHandlersWrapper m_handlersWrapper;
 
-    Vector2 hitPoint;
+    Vector2 hitPoint;//Track point hit from raycast checking for the ground
 
-
+    //Animator params
     const string BALLMODE = "ballMode";
     const string SPEED = "speed";
 
@@ -141,6 +141,7 @@ public class MergedPlayerController : PlayerController_Base
 
         m_grounded = false;
 
+        //Setup the bouncy max jump to be the min jump height * the assignable scalar range(1,4)
         m_maxJumpHeight = m_bminJumpHeight * m_maxJumpScalar;
 
         //Audio Sources
@@ -157,14 +158,14 @@ public class MergedPlayerController : PlayerController_Base
     void UpdateCurrentController()
     {
 
-        //Are we currenty supposed to be grounded?
+        
         float castDistance = m_grounded ? (m_capsuleCollider.size.y / 2) + 0.6f : Mathf.Abs(m_rb.velocity.y);
 
 
-
+        //Check grounded status
         RaycastHit2D groundHit = Physics2D.Raycast(transform.position, -transform.up, castDistance, LayerMask.GetMask(OBSTACLE));
 
-
+        //Are we currenty supposed to be grounded?
         if (groundHit && m_rb.velocity.y < 0)
         {
             m_placeOnGroundFlag = true;
@@ -178,7 +179,7 @@ public class MergedPlayerController : PlayerController_Base
         UpdateAnimation();
         UpdateCollider();
 
-        //Check grounded status
+       
 
         ClampSpeedForces();
         UpdateHorizontalMovement();
@@ -227,6 +228,7 @@ public class MergedPlayerController : PlayerController_Base
             return;
         } 
 
+        //Catch up to physics collider
         transform.position = m_rb.position;
         if (m_currentController != PlayerControllers.STUNNED)
         {
@@ -391,6 +393,7 @@ public class MergedPlayerController : PlayerController_Base
     void UpdateHorizontalMovement()
     {
         if (m_isDashing) return;
+
         float currentMaxSpeed = m_currentController == PlayerControllers.DEFAULT ? m_maxDefaultSpeed : m_maxBHorizontalSpeed;
         float currentTimeToReachTarget = m_currentController == PlayerControllers.DEFAULT ? m_timeToReachMaxSpeed : m_btimeToReachMaxSpeed;
         float roc = (currentMaxSpeed / currentTimeToReachTarget) * Time.deltaTime;//Rate of change
@@ -401,14 +404,14 @@ public class MergedPlayerController : PlayerController_Base
             m_currentHorizontalSpeed -= roc;
 
         }
-        else if (InputManager.PressingMovementInput())
+        else if (InputManager.PressingMovementInput())//Accelerate based on input
         {
             m_currentHorizontalSpeed += roc;
             m_lastInputDirection = InputManager.GetMovementInput();
         }
         else
         {
-            m_currentHorizontalSpeed -= (roc / 3f);
+            m_currentHorizontalSpeed -= (roc / 3f);//Decelerate if not input
         }
 
     }
@@ -559,9 +562,9 @@ public class MergedPlayerController : PlayerController_Base
             //Bounce a bit less everytime
             m_currentVerticalSpeed = hitEnemy ? m_currentVerticalSpeed * -m_enemyBounceScalar : m_currentVerticalSpeed * -0.6f;
 
-            m_lastPositionAfterHittingGround = colliderHit.transform.position;
+            m_lastPositionAfterHittingGround = colliderHit.transform.position;//Track the last point player hit the ground and use as reference
 
-            m_currentVerticalSpeed = Mathf.Abs(m_currentVerticalSpeed) < 1.4f ? 0 : m_currentVerticalSpeed;
+            m_currentVerticalSpeed = Mathf.Abs(m_currentVerticalSpeed) < 1.4f ? 0 : m_currentVerticalSpeed;//Is the player slow enough to stop bouncing?
         }
 
         m_currentJumpHeight = m_currentController == PlayerControllers.DEFAULT ? m_minJumpheight : m_bminJumpHeight;
@@ -582,21 +585,6 @@ void ApplyGravityIfNotGrounded()
     {
         m_currentVerticalSpeed -= gravityAccRate;
         //m_bounceless = false;
-    }
-
-    //Stop bouncing if player is moving vertically slowly enough and player intention is to be grounded
-    if (m_bounceless && m_currentController == PlayerControllers.BOUNCY)
-    {
-        m_grounded = true;
-        m_bounceless = true;
-        m_currentVerticalSpeed = 0;
-
-        //if (m_bounceless)
-        //{
-        //    m_rb.position = new Vector2(m_rb.position.x, m_lastPositionAfterHittinGround.y + 0.15f);
-        //}
-        ////Reset handler
-        //m_groundBufferHandler = Time.time + m_groundBufferTime;
     }
 }
 
