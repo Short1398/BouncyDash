@@ -135,4 +135,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   checkPointNum: 1
   timeAtCheck: 0
-  passed: 0
+  analyticsTime: 0
