@@ -30,7 +30,13 @@ public class DeathEffect : MonoBehaviour
     List<GameObject> activeParticles = new List<GameObject>();
     float startTime;
     bool active = false;
-    
+
+    private void Awake()
+    {
+        // This is just for testing/demonstration - get rid of it later
+        Explode(Vector3.up);
+    }
+
     private void Update()
     {
         if (active)
