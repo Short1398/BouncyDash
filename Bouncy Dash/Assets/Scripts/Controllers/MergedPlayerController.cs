@@ -98,7 +98,7 @@ public class MergedPlayerController : PlayerController_Base
     AnalyticsConfig aC;
 
     // Start is called before the first frame update
-    void Start()
+   protected override void Start()
     {
         //Initialize parent controller
         base.Start();
@@ -309,16 +309,16 @@ public class MergedPlayerController : PlayerController_Base
                 
                 m_stunTimerHandler = Time.time + m_stunnedTime;
 
-                stunName = collision.gameObject.name;
-                if (aC.gathering)
-                {
-                    stunEvent.TriggerEvent();
-                    if (aC.debug) print("Stun Event fired: " + stunName);
-                }
-                else if (aC.debug)
-                {
-                    print("Stun Event not fired: " + stunName);
-                }
+                //stunName = collision.gameObject.name;
+                //if (aC.gathering)
+                //{
+                //    stunEvent.TriggerEvent();
+                //    if (aC.debug) print("Stun Event fired: " + stunName);
+                //}
+                //else if (aC.debug)
+                //{
+                //    print("Stun Event not fired: " + stunName);
+                //}
 
             }
         }
@@ -477,67 +477,67 @@ public class MergedPlayerController : PlayerController_Base
 
         m_bounceResult = m_bController.ReactToBorders(colliderHit);
 
-        #region Bounce and Chain Analytics
+        //#region Bounce and Chain Analytics
 
-        if (hitEnemy)
-        {
-            //bounce
-            bounceName = hitEnemy.name;
-            bounceUpwardVelocity = m_currentVerticalSpeed;
-            bounceHorizontalVelocity = m_currentHorizontalSpeed;
-            //chain
-            chainEnemies.Add(bounceName);
+        //if (hitEnemy)
+        //{
+        //    //bounce
+        //    bounceName = hitEnemy.name;
+        //    bounceUpwardVelocity = m_currentVerticalSpeed;
+        //    bounceHorizontalVelocity = m_currentHorizontalSpeed;
+        //    //chain
+        //    chainEnemies.Add(bounceName);
 
-            if (aC.gathering)
-            {
-                bounceEvent.TriggerEvent();
-                if (aC.debug) print("bounce event fired: " + bounceName + " at " + bounceUpwardVelocity);
-            }
-            else if (aC.debug)
-            {
-                print("bounce event not fired: " + bounceName + " at " + bounceUpwardVelocity);
-            }
-        }
-        else
-        {
-            if (m_grounded)
-            {
-                if (chainEnemies.Count > 1)
-                {
-                    chain = "";
-                    for (int i = 0; i < chainEnemies.Count; i++)
-                    {
-                        chain += chainEnemies[i];
-                        chain += " ";
-                    }
+        //    if (aC.gathering)
+        //    {
+        //        bounceEvent.TriggerEvent();
+        //        if (aC.debug) print("bounce event fired: " + bounceName + " at " + bounceUpwardVelocity);
+        //    }
+        //    else if (aC.debug)
+        //    {
+        //        print("bounce event not fired: " + bounceName + " at " + bounceUpwardVelocity);
+        //    }
+        //}
+        //else
+        //{
+        //    if (m_grounded)
+        //    {
+        //        if (chainEnemies.Count > 1)
+        //        {
+        //            chain = "";
+        //            for (int i = 0; i < chainEnemies.Count; i++)
+        //            {
+        //                chain += chainEnemies[i];
+        //                chain += " ";
+        //            }
 
-                    if (aC.gathering)
-                    {
-                        if (aC.debug)
-                        {
-                            chainEvent.TriggerEvent();
-                            print("chain event fired: " + chain);
-                        }
+        //            if (aC.gathering)
+        //            {
+        //                if (aC.debug)
+        //                {
+        //                    chainEvent.TriggerEvent();
+        //                    print("chain event fired: " + chain);
+        //                }
 
-                    }
-                    else if (aC.debug)
-                    {
-                        print("chain event not fired: " + chain);
-                    }
+        //            }
+        //            else if (aC.debug)
+        //            {
+        //                print("chain event not fired: " + chain);
+        //            }
 
-                }
-                else if (aC.debug)
-                {
+        //        }
+        //        else if (aC.debug)
+        //        {
 
-                    print("no chain");
+        //            print("no chain");
 
-                    chainEnemies.Clear();
+        //            chainEnemies.Clear();
 
-                }
-            }
-        }
+        //        }
+        //    }
+        //}
 
-        #endregion
+        //#endregion
 
         if (hitEnemy)
         {
@@ -611,8 +611,10 @@ void UpdateStunnedState()
         bool timesUp = Time.time > m_stunTimerHandler;
         m_currentController = timesUp ? PlayerControllers.DEFAULT : PlayerControllers.STUNNED;
         m_sr.material.color = timesUp ? Color.white : Color.red;
+
 }
 
+  public PlayerControllers GetCurrentControlType() { return m_currentController; } 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
     //Methods for Bouncy component
