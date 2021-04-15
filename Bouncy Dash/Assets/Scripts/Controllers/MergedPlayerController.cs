@@ -177,7 +177,7 @@ public class MergedPlayerController : PlayerController_Base
 
         UpdateSwapStatus();
         UpdateAnimation();
-        UpdateCollider();
+        //UpdateCollider();
 
        
 
@@ -204,7 +204,7 @@ public class MergedPlayerController : PlayerController_Base
         {
             UpdateStunnedState();
         }
-
+        Debug.Log(m_currentVerticalSpeed);
          //if(m_currentController == PlayerControllers.BOUNCY)Debug.Log(m_currentVerticalSpeed);
     }
 
@@ -251,80 +251,100 @@ public class MergedPlayerController : PlayerController_Base
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (m_rb)
-        {
-            //Did we hit an enemie's weakspot or wall? 
-            if (collision.GetComponent<Enemy_Base>() || collision.tag == OBSTACLE || collision.gameObject.layer == LayerMask.NameToLayer(OBSTACLE))
-            {
+        //if (m_rb)
+        //{
+        //    //Did we hit an enemie's weakspot or wall? 
+        //    if (collision.GetComponent<Enemy_Base>() || collision.tag == OBSTACLE || collision.gameObject.layer == LayerMask.NameToLayer(OBSTACLE))
+        //    {
 
-                if (m_rb.velocity.y < 0 && m_bController.m_sensors.DSensor)
-                {
-                    //Record the last position when hitting the ground
-                    m_lastPositionAfterHittingGround = m_rb.position;
-                }
-                Enemy_Base hitEnemy = collision.GetComponent<Enemy_Base>();
+        //        if (m_rb.velocity.y < 0 && m_bController.m_sensors.DSensor)
+        //        {
+        //            //Record the last position when hitting the ground
+        //            m_lastPositionAfterHittingGround = m_rb.position;
+        //        }
+        //        Enemy_Base hitEnemy = collision.GetComponent<Enemy_Base>();
 
-                CheckBorderReaction(collision, hitEnemy);
+        //        CheckBorderReaction(collision, hitEnemy);
 
 
-                if (hitEnemy)
-                {
-                    //Did we hit a grub enemy?
-                    if (collision.GetComponent<WalkingEnemy>())
-                    {
-                        grubSound.Play();
-                    }
-                    //Did we hit a beetle enemy?
-                    if (collision.GetComponent<TurretController>())
-                    {
-                        beetleSound.Play();
-                    }
-                    //Did we hit a hornet enemy?
-                    if (collision.GetComponent<HornetController>())
-                    {
-                        waspSound.Play();
-                    }
+        //        if (hitEnemy)
+        //        {
+        //            //Did we hit a grub enemy?
+        //            if (collision.GetComponent<WalkingEnemy>())
+        //            {
+        //                grubSound.Play();
+        //            }
+        //            //Did we hit a beetle enemy?
+        //            if (collision.GetComponent<TurretController>())
+        //            {
+        //                beetleSound.Play();
+        //            }
+        //            //Did we hit a hornet enemy?
+        //            if (collision.GetComponent<HornetController>())
+        //            {
+        //                waspSound.Play();
+        //            }
 
-                    if (collision.GetComponent<Respawnable>())
-                    {
-                        collision.gameObject.GetComponent<Respawnable>().Die();
-                    }
-                    else
-                    {
-                        Destroy(collision.gameObject);
-                    }
+        //            if (collision.GetComponent<Respawnable>())
+        //            {
+        //                collision.gameObject.GetComponent<Respawnable>().Die();
+        //            }
+        //            else
+        //            {
+        //                Destroy(collision.gameObject);
+        //            }
 
-                }
+        //        }
 
-            }
-            //Did we hit anything that threatens the player?
-            else if (collision.gameObject.layer == LayerMask.NameToLayer(THREAT) && m_currentController != PlayerControllers.STUNNED)
-            {
-                //Play audio for when player takes damage
-                //hurtSound.Play();
+        //    }
+        //    //Did we hit anything that threatens the player?
+        //    else if (collision.gameObject.layer == LayerMask.NameToLayer(THREAT) && m_currentController != PlayerControllers.STUNNED)
+        //    {
+        //        //Play audio for when player takes damage
+        //        //hurtSound.Play();
 
-                //TODO take damage
-                m_currentController = PlayerControllers.STUNNED;
-                m_currentHorizontalSpeed = 0;
+        //        //TODO take damage
+        //        m_currentController = PlayerControllers.STUNNED;
+        //        m_currentHorizontalSpeed = 0;
                 
-                m_stunTimerHandler = Time.time + m_stunnedTime;
+        //        m_stunTimerHandler = Time.time + m_stunnedTime;
 
-                //stunName = collision.gameObject.name;
-                //if (aC.gathering)
-                //{
-                //    stunEvent.TriggerEvent();
-                //    if (aC.debug) print("Stun Event fired: " + stunName);
-                //}
-                //else if (aC.debug)
-                //{
-                //    print("Stun Event not fired: " + stunName);
-                //}
+        //        //stunName = collision.gameObject.name;
+        //        //if (aC.gathering)
+        //        //{
+        //        //    stunEvent.TriggerEvent();
+        //        //    if (aC.debug) print("Stun Event fired: " + stunName);
+        //        //}
+        //        //else if (aC.debug)
+        //        //{
+        //        //    print("Stun Event not fired: " + stunName);
+        //        //}
 
-            }
-        }
+        //    }
+        //}
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (m_rb)
+        {
+            bool IsBouncy = m_currentController == PlayerControllers.BOUNCY ? true : false;
+
+            //TODO Layer, component, and tag checks are all duplicated for testing purposes. Optimization may be useful for future development
+            if (IsBouncy)
+            {
+                CheckBouncyCollision(collision);
+            }
+            else
+            {
+                CheckDefaultCollision(collision);
+            }
+        }
+       
+    }
+
+
+    void CheckDefaultCollision(Collision2D collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer(OBSTACLE) && m_placeOnGroundFlag)
         {
@@ -338,6 +358,78 @@ public class MergedPlayerController : PlayerController_Base
             m_currentController = PlayerControllers.STUNNED;
             m_currentHorizontalSpeed = 0;
             m_stunTimerHandler = Time.time + m_stunnedTime;
+
+        }
+    }
+
+    void CheckBouncyCollision(Collision2D collision)
+    {
+        //Did we hit an enemie's weakspot or wall? 
+        if (collision.transform.GetComponent<Enemy_Base>() || collision.transform.tag == OBSTACLE || collision.gameObject.layer == LayerMask.NameToLayer(OBSTACLE))
+        {
+
+            if (m_rb.velocity.y < 0 && m_bController.m_sensors.DSensor)
+            {
+                //Record the last position when hitting the ground
+                m_lastPositionAfterHittingGround = m_rb.position;
+            }
+            Enemy_Base hitEnemy = collision.transform.GetComponent<Enemy_Base>();
+
+            CheckBorderReaction(collision.collider, hitEnemy);
+
+
+            if (hitEnemy)
+            {
+                //Did we hit a grub enemy?
+                if (collision.transform.GetComponent<WalkingEnemy>())
+                {
+                    grubSound.Play();
+                }
+                //Did we hit a beetle enemy?
+                if (collision.transform.GetComponent<TurretController>())
+                {
+                    beetleSound.Play();
+                }
+                //Did we hit a hornet enemy?
+                if (collision.transform.GetComponent<HornetController>())
+                {
+                    waspSound.Play();
+                }
+
+                if (collision.transform.GetComponent<Respawnable>())
+                {
+                    collision.gameObject.GetComponent<Respawnable>().Die();
+                }
+                else
+                {
+                    Destroy(collision.gameObject);
+                }
+
+            }
+
+        }
+        //Did we hit anything that threatens the player?
+        else if (collision.gameObject.layer == LayerMask.NameToLayer(THREAT) && m_currentController != PlayerControllers.STUNNED)
+        {
+            //Play audio for when player takes damage
+            //hurtSound.Play();
+
+            //TODO take damage
+            m_currentController = PlayerControllers.STUNNED;
+            m_currentHorizontalSpeed = 0;
+
+            m_stunTimerHandler = Time.time + m_stunnedTime;
+
+            //stunName = collision.gameObject.name;
+            //if (aC.gathering)
+            //{
+            //    stunEvent.TriggerEvent();
+            //    if (aC.debug) print("Stun Event fired: " + stunName);
+            //}
+            //else if (aC.debug)
+            //{
+            //    print("Stun Event not fired: " + stunName);
+            //}
 
         }
     }
@@ -363,12 +455,12 @@ public class MergedPlayerController : PlayerController_Base
     void UpdateAnimation()
     {
         //Sprite renderer update
-        m_sr.flipX = m_currentTotalVelocity.x > 0 ? true : false;
+        m_sr.flipX = m_lastInputDirection.x > 0 ? true : false;
 
 
         if (m_currentController == PlayerControllers.DEFAULT)
         {
-            m_animator.SetFloat(SPEED, Mathf.Abs(m_lastCalculatedVelocity.x));
+            m_animator.SetFloat(SPEED, Mathf.Abs(m_currentHorizontalSpeed));
         }
     }
 
@@ -465,8 +557,12 @@ public class MergedPlayerController : PlayerController_Base
             }
             else
             {
-                m_ps.Stop();
-                m_vb.Show(false);
+                if (m_ps.isEmitting)
+                {
+                    m_ps.Stop();
+                    m_vb.Show(false);
+                }
+                
             }
         }
     }
@@ -554,7 +650,7 @@ public class MergedPlayerController : PlayerController_Base
         
         if (m_bounceResult.bounceHorizontally)
         {
-            m_currentHorizontalSpeed = hitEnemy ? m_currentHorizontalSpeed += 2 : m_currentHorizontalSpeed;
+            m_currentHorizontalSpeed = hitEnemy ? m_currentHorizontalSpeed * m_enemyBounceScalar : m_currentHorizontalSpeed;
             m_lastInputDirection.x *= -1;
         }
         if (m_bounceResult.bounceVertically)

@@ -441,6 +441,9 @@ public class BouncyController : PlayerController_Base
 
                 string obstacleName = colliderHit.transform.name;
                 string sensorHitName = sensorHit.transform.name;
+
+                bool groundNearBy = m_sensorBuffer.Contains(m_sensors.DSensor);
+
                 if (obstacleName == sensorHitName)
                 {
                     if (sensorHit == m_sensors.LSensor || sensorHit == m_sensors.RSensor)
@@ -451,6 +454,10 @@ public class BouncyController : PlayerController_Base
                     {
                         result.bounceVertically = true;
                     }
+                }
+                else if (groundNearBy)
+                {
+                    result.bounceVertically = true;
                 }
             }
         }
