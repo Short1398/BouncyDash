@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8344655197933692463
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8344655197933692457}
+  - component: {fileID: 8344655197933692462}
+  m_Layer: 0
+  m_Name: Gore Particle Emitter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8344655197933692457
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8344655197933692463}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8344655197933692462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8344655197933692463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0664302e42e3e8f4cb0edf40aeda2def, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particle: {fileID: 804114247460006057, guid: d24e97216605cb74688ce3afbd3e4819, type: 3}
+  spawnRadius: 0
+  volume: 10
+  spread: 5
+  sprites:
+  - {fileID: 21300000, guid: 3e01d26f2b4ac004d91fe554887bdcdd, type: 3}
+  - {fileID: 21300000, guid: 2a6a4411f401cc24b9dbbf49200dd628, type: 3}
+  - {fileID: 21300000, guid: 74c948aabea272643b2f39cf5677746a, type: 3}
+  - {fileID: 21300000, guid: 131f5b06d8cd0dd40b2dc6a5eb7521da, type: 3}
+  - {fileID: 21300000, guid: 36a3c0a100847934ba1eee3f4a2d4949, type: 3}
+  colors:
+  - {r: 0.5128866, g: 0.7735849, b: 0.33205768, a: 1}
+  - {r: 0.4811321, g: 0.4414459, b: 0.15659487, a: 1}
+  - {r: 0.8396226, g: 0.8369773, b: 0.46337664, a: 1}
+  lifespan: 5
+  fadeType: 0
+  fadeRate:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: -0
+      outSlope: -0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.34583333
+    - serializedVersion: 3
+      time: 0.8000184
+      value: 0.000051263225
+      inSlope: -0.0016312583
+      outSlope: -0.0016312583
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33201888
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 8.745626
+      outSlope: 8.745626
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.08448401
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
