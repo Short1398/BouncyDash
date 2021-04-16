@@ -691,8 +691,9 @@ void UpdateDash(bool dashAttempted = false)
     {
         m_isDashing = true;
         m_currentHorizontalSpeed = m_maxDashSpeed;
+        m_animator.SetFloat(SPEED, Mathf.Abs(m_currentHorizontalSpeed));
 
-        m_timerHandler.dashHandler = Time.time + m_timeToDash;
+            m_timerHandler.dashHandler = Time.time + m_timeToDash;
     }
     else if (m_isDashing)
     {

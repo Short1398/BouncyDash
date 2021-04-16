@@ -19,6 +19,8 @@ public class CameraControl : MonoBehaviour {
     [Tooltip("The Player character")]
     public Transform playerPos;
 
+    public Vector2 offset;
+
     private void Start()
     {
         playerPos = FindObjectOfType<MergedPlayerController>().transform;
@@ -32,11 +34,11 @@ public class CameraControl : MonoBehaviour {
     void FollowPlayer() {
         if (playerPos.position.x > minBounds.x && playerPos.position.x < maxBounds.x) {
             // Ensure the Camera does not leave horizontal bounds, then smoothly follow the Player
-            this.transform.position = new Vector3(playerPos.position.x, this.transform.position.y, -10);
+            this.transform.position = new Vector3(playerPos.position.x, this.transform.position.y, -10) + (Vector3)offset;
         }
         if (playerPos.position.y > minBounds.y && playerPos.position.y < maxBounds.y) {
             // Ensure the Camera does not leave vertical bounds, then smoothly follow the Player
-            this.transform.position = new Vector3(this.transform.position.x, playerPos.position.y, -10);
+            this.transform.position = new Vector3(this.transform.position.x, playerPos.position.y, -10) ;
         }
     }
 }

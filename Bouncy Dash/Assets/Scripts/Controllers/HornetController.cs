@@ -35,11 +35,15 @@ public class HornetController : Enemy_Base
     //Components
     Rigidbody2D m_rb;
 
+    Transform player;
+
     // Start is called before the first frame update
     void Start()
     {
         //Get components
         m_rb = GetComponent<Rigidbody2D>();
+
+        player = FindObjectOfType<MergedPlayerController>().transform;
 
         m_currentState = FlyingStages.FOLLOW_PATROL;
         m_currentHorizontalSpeed = m_maxHorizontalSpeed;
@@ -50,21 +54,24 @@ public class HornetController : Enemy_Base
     // Update is called once per frame
     void Update()
     {
-        if (m_rb)
+        if(Mathf.Abs(player.position.x - transform.position.x) < 30)
         {
-            switch (m_currentState)
+            if (m_rb)
             {
-                case FlyingStages.FOLLOW_PATROL:
-                    FollowPatrol();
-                    break;
-                case FlyingStages.LOOKOUT:
-                    Lookout();
-                    break;
+                switch (m_currentState)
+                {
+                    case FlyingStages.FOLLOW_PATROL:
+                        FollowPatrol();
+                        break;
+                    case FlyingStages.LOOKOUT:
+                        Lookout();
+                        break;
+                }
             }
-        }
-        else
-        {
-            throw new MissingComponentException(gameObject.name + " is missing rigidbody component to register collisions with other objects, please ensure rigidbody component is attached to prefab or instance");
+            else
+            {
+                throw new MissingComponentException(gameObject.name + " is missing rigidbody component to register collisions with other objects, please ensure rigidbody component is attached to prefab or instance");
+            }
         }
        
     }
