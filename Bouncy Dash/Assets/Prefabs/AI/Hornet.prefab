@@ -40,7 +40,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5053938728263818916}
-  m_BodyType: 0
+  m_BodyType: 2
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -66,7 +66,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.4424753, y: -0.3242427}
+  m_Offset: {x: -0.39813837, y: -0.3242427}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -77,7 +77,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.59502226, y: 0.78778446}
+  m_Size: {x: 0.50634843, y: 0.78778446}
   m_EdgeRadius: 0
 --- !u!1 &5933164899836473344
 GameObject:
@@ -93,6 +93,7 @@ GameObject:
   - component: {fileID: 5420871551711938717}
   - component: {fileID: 4070752362264964111}
   - component: {fileID: 6900896243157644191}
+  - component: {fileID: 8950646007746147798}
   m_Layer: 8
   m_Name: Hornet
   m_TagString: Obstacle
@@ -128,18 +129,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.20013297, y: -0.22960353}
+  m_Offset: {x: 0, y: -0.15470982}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.018421, y: 1.8842105}
+    oldSize: {x: 3.1636364, y: 2.4545455}
     newSize: {x: 7.67, y: 7.16}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.0752494, y: 1.2398527}
+  m_Size: {x: 0.95362735, y: 0.89568424}
   m_EdgeRadius: 0
 --- !u!50 &8634728046221708966
 Rigidbody2D:
@@ -223,7 +224,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 1c0fb9b71f3c5d3489f1376e0644d3b7, type: 3}
+  m_Sprite: {fileID: 7011527348821570556, guid: aa6b5c2b9cfdb614982ba73da37534e0,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -246,3 +248,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2d14dba31a600f4991e4d66d3740fa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!95 &8950646007746147798
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5933164899836473344}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: cff6af0b352911f438b62231b12ba7b3, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
