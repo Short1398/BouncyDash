@@ -69,10 +69,21 @@ public class BulletController : MonoBehaviour
 
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D otherCollider)
     {
-        if (collision.gameObject != m_owner)
+        if (otherCollider.gameObject != m_owner)
         {
+            //TODO delete, this is just a brute force solution to a current stun problem
+            if (otherCollider.GetComponent<PlayerController_Base>())
+            {
+                MergedPlayerController playerControllerRef = otherCollider.GetComponent<MergedPlayerController>();
+
+                if (playerControllerRef)
+                {
+                    playerControllerRef.StunPlayer();
+                }
+            }
+
             Destroy(this.gameObject);
         }
     }

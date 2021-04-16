@@ -409,10 +409,8 @@ public class MergedPlayerController : PlayerController_Base
             //hurtSound.Play();
 
             //TODO take damage
-            m_currentController = PlayerControllers.STUNNED;
-            m_currentHorizontalSpeed = 0;
 
-            m_stunTimerHandler = Time.time + m_stunnedTime;
+            StunPlayer();
 
             //stunName = collision.gameObject.name;
             //if (aC.gathering)
@@ -430,6 +428,14 @@ public class MergedPlayerController : PlayerController_Base
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
+
+    public void StunPlayer()
+    {
+        m_currentController = PlayerControllers.STUNNED;
+        m_currentHorizontalSpeed = 0;
+
+        m_stunTimerHandler = Time.time + m_stunnedTime;
+    }
     //Methods for both components
     void UpdateSwapStatus()
     {
