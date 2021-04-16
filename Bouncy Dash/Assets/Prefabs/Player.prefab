@@ -324,7 +324,6 @@ GameObject:
   - component: {fileID: 4512654597337045961}
   - component: {fileID: 4512654597337045957}
   - component: {fileID: 4512654597337045958}
-<<<<<<< HEAD
   - component: {fileID: 4735823549834549535}
   - component: {fileID: 2430419791198572797}
   - component: {fileID: 3766083119239262447}
@@ -334,10 +333,7 @@ GameObject:
   - component: {fileID: -3352369859039044876}
   - component: {fileID: 8332338620353034618}
   - component: {fileID: 4893019051854459983}
-  m_Layer: 0
-=======
   m_Layer: 10
->>>>>>> juice
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
