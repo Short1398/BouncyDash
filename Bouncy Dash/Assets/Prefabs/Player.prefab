@@ -419,7 +419,7 @@ MonoBehaviour:
   m_terminalVelocity: 22
   m_timeToDash: 1
   m_maxDashSpeed: 8
-  m_stunnedTime: 1
+  m_stunnedTime: 0.3
   m_pushBackForce: 0
   m_currentHorizontalVelocity: {x: 0, y: 0}
   m_currentVerticalVelocity: {x: 0, y: 0}
