@@ -39,7 +39,7 @@ public class Vavi : MonoBehaviour
     #region Variable Declaration
 
 
-    
+
 
     public enum DisplayType
     {
@@ -82,7 +82,7 @@ public class Vavi : MonoBehaviour
     DisplayTypeOptions displayTypeOptions;
 
 
-    
+
 
 
 
@@ -120,6 +120,8 @@ public class Vavi : MonoBehaviour
     [SerializeField] bool showUnits;
     [SerializeField] int valueDecimalPlaces;
 
+    [SerializeField] List<string> atValueOverrideTexts;
+    [SerializeField] bool showOverrideText;
 
     //Color Options
     [Header("Color")]
@@ -137,9 +139,9 @@ public class Vavi : MonoBehaviour
     [SerializeField] UnityEvent onAnimate;
 
 
-    
 
-    
+
+
 
     [Header("Setup")]
 
@@ -172,6 +174,14 @@ public class Vavi : MonoBehaviour
 
     #endregion
 
+    void GizmoDisplay()
+    {
+        GatherSpriteStats();
+
+        SetUpImages();
+
+        Display();
+    }
 
     void Start()
     {
@@ -182,6 +192,9 @@ public class Vavi : MonoBehaviour
         if (onAnimate == null)
             onAnimate = new UnityEvent();
 
+        GatherSpriteStats();
+
+        SetUpImages();
 
         Display();
 
@@ -192,19 +205,19 @@ public class Vavi : MonoBehaviour
         extraImage.rectTransform.pivot = new Vector2(0, 0);
 
         valueHandlingOptions.warned = false;
-        
+
     }
 
     private void Update()
     {
-        if (testMode) Display();
+        //if (testMode) Display();
     }
 
     private void OnDrawGizmos()
     {
         //this updates the image after something was changed in Unity's inspector window.
         if (testMode)
-            Invoke("Display", 0.1f);
+            Invoke("GizmoDisplay", 0.1f);
     }
 
     void GatherSpriteStats()
@@ -223,13 +236,76 @@ public class Vavi : MonoBehaviour
         }
     }
 
+    void SetUpImages()
+    {
+        switch (displayType)
+        {
+            case DisplayType.simple:
 
-    [ContextMenu("Update Display")]//this line lets you activate the 'Display' function from Unity. Hit the gear at the top right of this script and select 'Update Display' from the dropdown menu to do so.
+                positiveImage.type = Image.Type.Simple;
+                positiveImage.rectTransform.sizeDelta = new Vector2(100 * nsSize.x, 100 * nsSize.y);
+                negativeImage.type = Image.Type.Simple;
+                negativeImage.rectTransform.sizeDelta = new Vector2(100 * nsSize.x, 100 * nsSize.y);
+
+                break;
+
+            case DisplayType.tiled:
+
+                positiveImage.type = Image.Type.Tiled;
+
+                break;
+
+            case DisplayType.size:
+
+                positiveImage.type = Image.Type.Simple;
+
+                break;
+
+            case DisplayType.fill:
+
+                positiveImage.rectTransform.sizeDelta = new Vector2(100 * psSize.x, 100 * psSize.y);
+
+
+                //change image type
+                positiveImage.type = Image.Type.Filled;
+
+                //change rect width/height according to values
+                positiveImage.fillMethod = displayTypeOptions.fillMethod;
+                positiveImage.fillOrigin = displayTypeOptions.fillOrigin;
+                positiveImage.fillClockwise = displayTypeOptions.fillClockwise;
+
+                if (negativeImage)
+                {
+                    negativeImage.rectTransform.sizeDelta = new Vector2(100 * nsSize.x, 100 * nsSize.y);
+                    negativeImage.type = Image.Type.Simple;
+                }
+
+                if (extraImage)
+                {
+                    extraImage.rectTransform.sizeDelta = new Vector2(100 * exSize.x, 100 * exSize.y);
+
+                    extraImage.type = Image.Type.Filled;
+                    extraImage.fillMethod = displayTypeOptions.fillMethod;
+                    extraImage.fillOrigin = displayTypeOptions.fillOrigin;
+                    extraImage.fillClockwise = displayTypeOptions.fillClockwise;
+                    extraImage.fillAmount = valueFiltered / valueMax;
+                }
+
+                break;
+
+            case DisplayType.animation:
+                break;
+
+        }
+    }
+
+
+
     public void Display()
     {
+
         onDisplay.Invoke();
-
-
+        
         #region FilterValue
         //Filter Value
 
@@ -254,105 +330,78 @@ public class Vavi : MonoBehaviour
         }
         #endregion
 
-
-        GatherSpriteStats();
-
-
         //Display
-        if (displayType == DisplayType.simple)
+
+        switch (displayType)
         {
-            positiveImage.type = Image.Type.Simple;
-            positiveImage.rectTransform.sizeDelta = new Vector2(100 * nsSize.x, 100 * nsSize.y);
-            negativeImage.type = Image.Type.Simple;
-            negativeImage.rectTransform.sizeDelta = new Vector2(100 * nsSize.x, 100 * nsSize.y);
-        }
+            case DisplayType.simple:
+                break;
+                
+            case DisplayType.tiled:
 
-        if (displayType == DisplayType.tiled)
-        {
-            positiveImage.type = Image.Type.Tiled;
-
-
-            if (displayTypeOptions.vertical)
-            {
-                positiveImage.rectTransform.sizeDelta = new Vector2(100 * psSize.x, valueFiltered * 100 * psSize.y);
-
-                //positiveImage.fillCenter = displayTypeOptions.fillCentre;
-
-                negativeImage.type = Image.Type.Tiled;
-                negativeImage.rectTransform.sizeDelta = new Vector2(100 * nsSize.x, valueMax * 100 * nsSize.y);
-            }
-            else
-            {
-                //change rect width/height according to values
-                positiveImage.rectTransform.sizeDelta = new Vector2(valueFiltered * 100 * psSize.x, 100 * psSize.y);
-                //positiveImage.fillCenter = displayTypeOptions.fillCentre;
-
-                if (negativeImage)
+                if (displayTypeOptions.vertical)
                 {
+                    positiveImage.rectTransform.sizeDelta = new Vector2(100 * psSize.x, valueFiltered * 100 * psSize.y);
+
+                    //positiveImage.fillCenter = displayTypeOptions.fillCentre;
+
                     negativeImage.type = Image.Type.Tiled;
-                    negativeImage.rectTransform.sizeDelta = new Vector2(valueMax * 100 * nsSize.x, 100 * nsSize.y);
+                    negativeImage.rectTransform.sizeDelta = new Vector2(100 * nsSize.x, valueMax * 100 * nsSize.y);
                 }
-            }            
-        }
-        
+                else
+                {
+                    //change rect width/height according to values
+                    positiveImage.rectTransform.sizeDelta = new Vector2(valueFiltered * 100 * psSize.x, 100 * psSize.y);
+                    //positiveImage.fillCenter = displayTypeOptions.fillCentre;
 
-        if (displayType == DisplayType.size)
-        {
-            positiveImage.type = Image.Type.Simple;
-            positiveImage.rectTransform.sizeDelta = Vector2.Lerp(displayTypeOptions.sizeMinScale, displayTypeOptions.sizeMaxScale, valueFiltered / valueMax) * 100;
-            negativeImage.rectTransform.sizeDelta = displayTypeOptions.sizeMaxScale * 100f;
-        }
+                    if (negativeImage)
+                    {
+                        negativeImage.type = Image.Type.Tiled;
+                        negativeImage.rectTransform.sizeDelta = new Vector2(valueMax * 100 * nsSize.x, 100 * nsSize.y);
+                    }
+                }
 
-        if (displayType == DisplayType.fill)
-        {
-            positiveImage.rectTransform.sizeDelta = new Vector2(100 * psSize.x, 100 * psSize.y);
-            negativeImage.rectTransform.sizeDelta = new Vector2(100 * nsSize.x, 100 * nsSize.y);
-            
+                break;
 
-            //change image type
-            positiveImage.type = Image.Type.Filled;
-            
-            //change rect width/height according to values
-            positiveImage.fillMethod = displayTypeOptions.fillMethod;
-            positiveImage.fillOrigin = displayTypeOptions.fillOrigin;
-            positiveImage.fillClockwise = displayTypeOptions.fillClockwise;
-            positiveImage.fillAmount = valueFiltered / valueMax;
 
-            if (negativeImage)
-            {
-                negativeImage.type = Image.Type.Filled;
-                negativeImage.fillAmount = 1;
-            }
-            if (extraImage)
-            {
-                extraImage.rectTransform.sizeDelta = new Vector2(100 * exSize.x, 100 * exSize.y);
 
-                extraImage.fillMethod = displayTypeOptions.fillMethod;
-                extraImage.fillOrigin = displayTypeOptions.fillOrigin;
-                extraImage.fillClockwise = displayTypeOptions.fillClockwise;
-                extraImage.fillAmount = valueFiltered / valueMax;
+            case DisplayType.size:
+                
+                positiveImage.rectTransform.sizeDelta = Vector2.Lerp(displayTypeOptions.sizeMinScale, displayTypeOptions.sizeMaxScale, valueFiltered / valueMax) * 100;
+                negativeImage.rectTransform.sizeDelta = displayTypeOptions.sizeMaxScale * 100f;
 
-                extraImage.type = Image.Type.Filled;
-                extraImage.fillAmount = extraValue / valueMax;
-            }
-        }
+                break;
 
-        if (displayType == DisplayType.animation)
-        {
-            positiveImage.type = Image.Type.Simple;
-            positiveImage.rectTransform.sizeDelta = new Vector2(100 * nsSize.x, 100 * nsSize.y);
-            negativeImage.type = Image.Type.Simple;
-            negativeImage.rectTransform.sizeDelta = new Vector2(0, 0);
 
-            //displayTypeOptions.animationSprites = GetSpritesFromClip(displayTypeOptions.animClip);
-            positiveImage.sprite = displayTypeOptions.animationSprites[Mathf.Clamp(Mathf.RoundToInt(value / valueMax * displayTypeOptions.animationSprites.Count) - 1, 0, displayTypeOptions.animationSprites.Count-1)];
+
+            case DisplayType.fill:
+
+                positiveImage.fillAmount = valueFiltered / valueMax;
+                
+                if (extraImage)
+                {
+                    extraImage.fillAmount = valueFiltered / valueMax;
+                }
+
+                break;
+
+#if UNITY_EDITOR
+
+            case DisplayType.animation:
+
+                positiveImage.type = Image.Type.Simple;
+                positiveImage.rectTransform.sizeDelta = new Vector2(100 * nsSize.x, 100 * nsSize.y);
+                negativeImage.type = Image.Type.Simple;
+                negativeImage.rectTransform.sizeDelta = new Vector2(0, 0);
+
+                displayTypeOptions.animationSprites = GetSpritesFromClip(displayTypeOptions.animClip);
+                positiveImage.sprite = displayTypeOptions.animationSprites[Mathf.Clamp(Mathf.RoundToInt(value / valueMax * displayTypeOptions.animationSprites.Count) - 1, 0, displayTypeOptions.animationSprites.Count - 1)];
+
+                break;
+#endif
+                //case DisplayType.shader:
 
         }
-
-        /*if (displayType == DisplayType.shader)
-        {
-
-        }*/
 
         #region Text
         if (text)
@@ -364,7 +413,7 @@ public class Vavi : MonoBehaviour
             {
                 text.text += valueName;
 
-                if (showValue || showOverMax || showPercent||showUnits)
+                if (showValue || showOverMax || showPercent || showUnits)
                 {
                     text.text += ": ";
                 }
@@ -383,12 +432,22 @@ public class Vavi : MonoBehaviour
             }
             if (showUnits)
             {
-                if(showValue || showOverMax || showPercent)
+                if (showValue || showOverMax || showPercent)
                 {
                     text.text += " ";
                 }
-                 text.text += valueUnits;
+                text.text += valueUnits;
             }
+            if (showOverrideText)
+            {
+                if (atValueOverrideTexts.Count > value)
+                    if (atValueOverrideTexts[Mathf.RoundToInt(value)] != null)
+                    {
+                        text.text += atValueOverrideTexts[Mathf.RoundToInt(value)];
+                    }
+
+            }
+
 
         }
         #endregion
@@ -404,7 +463,9 @@ public class Vavi : MonoBehaviour
 
     }
 
-    /*
+
+
+#if UNITY_EDITOR
     //Sourced from https://answers.unity.com/questions/1245599/how-to-get-all-sprites-used-in-a-2d-animator.html
     public static List<Sprite> GetSpritesFromAnimator(Animator anim)
     {
@@ -415,7 +476,9 @@ public class Vavi : MonoBehaviour
         }
         return _allSprites;
     }
+#endif
 
+#if UNITY_EDITOR
     //Sourced from https://answers.unity.com/questions/1245599/how-to-get-all-sprites-used-in-a-2d-animator.html
     private static List<Sprite> GetSpritesFromClip(AnimationClip clip)
     {
@@ -432,7 +495,9 @@ public class Vavi : MonoBehaviour
             }
         }
         return _sprites;
-    }*/
+    }
+#endif
+
 
     public static Vavi GetVavi(int k)
     {
@@ -454,15 +519,6 @@ public class Vavi : MonoBehaviour
             return null;
         }
     }
-
-    public void Show(bool show)
-    {
-        positiveImage.gameObject.SetActive(show);
-        negativeImage.gameObject.SetActive(show);
-        extraImage.gameObject.SetActive(show);
-        text.gameObject.SetActive(show);
-    }
-
 
     public void ValueSet(float f)
     {
@@ -492,13 +548,20 @@ public class Vavi : MonoBehaviour
         Display();
     }
 
+    public void Show(bool show)
+    {
+        positiveImage.gameObject.SetActive(show);
+        negativeImage.gameObject.SetActive(show);
+        extraImage.gameObject.SetActive(show);
+        text.gameObject.SetActive(show);
+    }
+
     //start animation 
     public void ValueAnimate(float newValue)
     {
         valueChange = newValue - value;
         onAnimate.Invoke();
         StartCoroutine(ValueAnimateTime(value, newValue, Time.time + animationTime, animationTime / animationframePerSecond, animationTime));
-        
     }
 
     #region Argument Functions
@@ -506,20 +569,23 @@ public class Vavi : MonoBehaviour
     //start animation, more arguments for customization
     public void ValueAnimate(float newValue, float time, int updatesPerTime)
     {
+        valueChange = newValue - value;
         onAnimate.Invoke();
         StartCoroutine(ValueAnimateTime(value, newValue, Time.time + time, time / updatesPerTime, time));
     }
-    
+
     //start animation, more arguments for customization
     public void ValueAnimate(float newValue, float time)
     {
+        valueChange = newValue - value;
         onAnimate.Invoke();
-        StartCoroutine(ValueAnimateTime(value, newValue, Time.time + time, time /animationframePerSecond, time));
+        StartCoroutine(ValueAnimateTime(value, newValue, Time.time + time, time / animationframePerSecond, time));
     }
 
     //start animation, more arguments for customization
     public void ValueAnimate(float newValue, int updatesPerTime)
     {
+        valueChange = newValue - value;
         onAnimate.Invoke();
         StartCoroutine(ValueAnimateTime(value, newValue, Time.time + animationTime, animationTime / updatesPerTime, animationTime));
     }
@@ -529,14 +595,18 @@ public class Vavi : MonoBehaviour
     //iterative animating
     IEnumerator ValueAnimateTime(float oldValue, float newValue, float killTime, float deltaTime, float time)
     {
-        
-        ValueSet(  oldValue + (animateChange.Evaluate( time - (killTime - Time.time) ) * (newValue - oldValue)) );
-        
+
+        ValueSet(oldValue + (animateChange.Evaluate(time - (killTime - Time.time)) * (newValue - oldValue)));
+
         yield return new WaitForSeconds(deltaTime);
 
         if (Time.time < killTime)
         {
             StartCoroutine(ValueAnimateTime(oldValue, newValue, killTime, deltaTime, time));
+        }
+        else
+        {
+            ValueSet(newValue);
         }
     }
 }

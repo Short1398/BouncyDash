@@ -82,7 +82,7 @@ public class MergedPlayerController : PlayerController_Base
     CapsuleCollider2D m_capsuleCollider;
     SpriteRenderer m_sr;
     ParticleSystem m_ps;
-    Vavi m_vb;
+    Vavi m_vv;
 
     [Header("Analytics")]
     //Analytics stuff, no touchie
@@ -128,8 +128,8 @@ public class MergedPlayerController : PlayerController_Base
         //Get other components
         m_sr = GetComponentInChildren<SpriteRenderer>();
         m_ps = GetComponentInChildren<ParticleSystem>();
-        m_vb = Vavi.GetVavi(1);
-        m_vb.Show(false);
+        m_vv = Vavi.GetVavi(1);
+        m_vv.Show(false);
         m_capsuleCollider = GetComponent<CapsuleCollider2D>();
 
         m_grounded = false;
@@ -540,13 +540,13 @@ public class MergedPlayerController : PlayerController_Base
 
                 if (atJumpPeek)
                 {
-                    m_vb.Show(false);
+                    m_vv.Show(false);
                     m_ps.Play();
                 }
                 else
                 {
-                    m_vb.ValueSet(alpha);
-                    m_vb.Show(true);
+                    m_vv.ValueSet(alpha+10);
+                    m_vv.Show(true);
                 }
             }
             else
@@ -554,7 +554,7 @@ public class MergedPlayerController : PlayerController_Base
                 if (m_ps.isEmitting)
                 {
                     m_ps.Stop();
-                    m_vb.Show(false);
+                    m_vv.Show(false);
                 }
                 
             }
