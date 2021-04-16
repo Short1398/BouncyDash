@@ -8,7 +8,10 @@ public class Follow : MonoBehaviour
     [SerializeField] bool canvasObject;
     [SerializeField] Transform target;
     [SerializeField] Vector2 offset;
-
+    private void Start()
+    {
+        target = FindObjectOfType<MergedPlayerController>().transform;
+    }
     // Update is called once per frame
     void FixedUpdate()
     {

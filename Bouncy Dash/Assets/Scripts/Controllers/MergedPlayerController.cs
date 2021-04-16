@@ -112,14 +112,7 @@ public class MergedPlayerController : PlayerController_Base
         if (!m_rb) throw new MissingComponentException(gameObject.name + " is missing the rigibody component, all movement relies on the rigidbody component");
 
         UpdateCurrentController();
-
-
-        //HARD CODED FIX SORRY
-        if (m_rb.position.y < -16)
-        {
-            transform.position = new Vector3(transform.position.x, 4, transform.position.z);
-            m_currentVerticalSpeed = 0;
-        }
+        
     }
 
     void InitializePlayerController()
@@ -204,7 +197,6 @@ public class MergedPlayerController : PlayerController_Base
         {
             UpdateStunnedState();
         }
-        Debug.Log(m_currentVerticalSpeed);
          //if(m_currentController == PlayerControllers.BOUNCY)Debug.Log(m_currentVerticalSpeed);
     }
 
@@ -223,10 +215,6 @@ public class MergedPlayerController : PlayerController_Base
 
     private void FixedUpdate()
     {
-        if (!m_rb) {
-            print("not working anyways");
-            return;
-        } 
 
         //Catch up to physics collider
         transform.position = m_rb.position;
@@ -244,8 +232,14 @@ public class MergedPlayerController : PlayerController_Base
 
                 m_currentTotalVelocity = m_currentHorizontalVelocity + m_currentVerticalVelocity;
 
+                
+
                 m_rb.velocity = m_currentTotalVelocity;
             }
+        }
+        else
+        {
+            m_rb.velocity = Vector3.zero;
         }
     }
 

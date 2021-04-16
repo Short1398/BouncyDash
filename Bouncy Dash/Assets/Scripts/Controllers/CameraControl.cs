@@ -19,6 +19,11 @@ public class CameraControl : MonoBehaviour {
     [Tooltip("The Player character")]
     public Transform playerPos;
 
+    private void Start()
+    {
+        playerPos = FindObjectOfType<MergedPlayerController>().transform;
+    }
+
     // Update is called once per frame
     void Update() {
         FollowPlayer();

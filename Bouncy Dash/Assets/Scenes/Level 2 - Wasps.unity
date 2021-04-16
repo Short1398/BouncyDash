@@ -13158,11 +13158,6 @@ PrefabInstance:
       propertyPath: m_enemyBounceScalar
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1117104680385135059, guid: 338101210dc86e24aa572b21aafdfbf4,
-        type: 3}
-      propertyPath: m_stunnedTime
-      value: 0.4
-      objectReference: {fileID: 0}
     - target: {fileID: 1117104680385135066, guid: 338101210dc86e24aa572b21aafdfbf4,
         type: 3}
       propertyPath: m_Name
