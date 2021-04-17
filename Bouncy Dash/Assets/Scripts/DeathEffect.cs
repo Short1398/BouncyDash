@@ -30,16 +30,32 @@ public class DeathEffect : MonoBehaviour
     List<GameObject> activeParticles = new List<GameObject>();
     float startTime;
     bool active = false;
-
-    private void Awake()
+    
+    private void Explode(Vector3 velocity)
     {
-        // This is just for testing/demonstration - get rid of it later
-        Explode(Vector3.up);
+        for (int i = 0; i < volume; i++)
+        {
+            activeParticles.Add(Instantiate(particle, transform.position + new Vector3(Random.Range(-spawnRadius, spawnRadius), Random.Range(-spawnRadius, spawnRadius), 0).normalized, Quaternion.identity));
+            activeParticles[i].GetComponentInChildren<Rigidbody2D>().AddForce(velocity + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0).normalized * spread, ForceMode2D.Impulse);
+            activeParticles[i].GetComponentInChildren<SpriteRenderer>().sprite = sprites[i%sprites.Count];
+            activeParticles[i].GetComponentInChildren<SpriteRenderer>().color = colors[i%colors.Count];
+        }
+        startTime = Time.time;
+        active = true;
     }
 
-    private void Update()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (active)
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
+        {
+            Explode(collision.gameObject.GetComponent<Rigidbody2D>().velocity);
+            StartCoroutine("ParticleDecay");
+        }
+    }
+
+    private IEnumerator ParticleDecay()
+    {
+        while (active)
         {
             switch (fadeType)
             {
@@ -77,19 +93,7 @@ public class DeathEffect : MonoBehaviour
             {
                 activeParticles.Clear();
             }
+            yield return null;
         }
-    }
-    
-    private void Explode(Vector3 velocity)
-    {
-        for (int i = 0; i < volume; i++)
-        {
-            activeParticles.Add(Instantiate(particle, transform.position + new Vector3(Random.Range(-spawnRadius, spawnRadius), Random.Range(-spawnRadius, spawnRadius), 0).normalized, Quaternion.identity));
-            activeParticles[i].GetComponentInChildren<Rigidbody2D>().AddForce(velocity + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0).normalized * spread, ForceMode2D.Impulse);
-            activeParticles[i].GetComponentInChildren<SpriteRenderer>().sprite = sprites[i%sprites.Count];
-            activeParticles[i].GetComponentInChildren<SpriteRenderer>().color = colors[i%colors.Count];
-        }
-        startTime = Time.time;
-        active = true;
     }
 }
