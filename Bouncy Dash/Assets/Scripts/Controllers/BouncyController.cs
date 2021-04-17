@@ -482,14 +482,15 @@ public class BouncyController : PlayerController_Base
     {
         m_sensorBuffer.Clear();
 
+        //Disable casts not being used
         m_sensors.USensor = Physics2D.Raycast(transform.position, transform.up, m_minSensorLength, LayerMask.GetMask(OBSTACLE, THREAT));
-        m_sensors.URSensor = Physics2D.Raycast(transform.position, (transform.up + transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.URSensor = Physics2D.Raycast(transform.position, (transform.up + transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
         m_sensors.RSensor = Physics2D.Raycast(transform.position, transform.right, m_minSensorLength, LayerMask.GetMask(OBSTACLE, THREAT));
-        m_sensors.RDSensor = Physics2D.Raycast(transform.position, (-transform.up + transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.RDSensor = Physics2D.Raycast(transform.position, (-transform.up + transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
         m_sensors.DSensor = Physics2D.Raycast(transform.position, -transform.up, m_minSensorLength, LayerMask.GetMask(OBSTACLE, THREAT));
-        m_sensors.DLSensor = Physics2D.Raycast(transform.position, (-transform.up + -transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.DLSensor = Physics2D.Raycast(transform.position, (-transform.up + -transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
         m_sensors.LSensor = Physics2D.Raycast(transform.position, -transform.right, m_minSensorLength, LayerMask.GetMask(OBSTACLE, THREAT));
-        m_sensors.LUSensor = Physics2D.Raycast(transform.position, (transform.up + -transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
+        //m_sensors.LUSensor = Physics2D.Raycast(transform.position, (transform.up + -transform.right).normalized, m_minSensorLength, LayerMask.GetMask(OBSTACLE));
 
         UpdateSensorHits(m_sensors.USensor);
         UpdateSensorHits(m_sensors.DSensor);

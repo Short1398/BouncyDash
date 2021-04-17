@@ -1,0 +1,10 @@
+diff a/Bouncy Dash/Assets/Prefabs/Player.prefab b/Bouncy Dash/Assets/Prefabs/Player.prefab	(rejected hunks)
+@@ -10928,7 +10928,7 @@
+       m_PreInfinity: 2
+       m_PostInfinity: 2
+       m_RotationOrder: 4
+-  moveWithTransform: 0
++  moveWithTransform: 1
+   moveWithCustomTransform: {fileID: 0}
+   scalingMode: 1
+   randomSeed: 0
