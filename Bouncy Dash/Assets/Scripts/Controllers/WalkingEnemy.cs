@@ -41,15 +41,12 @@ public class WalkingEnemy : Enemy_Base
     // Update is called once per frame
     void Update()
     {
-<<<<<<< HEAD
         // Checks that enemy is pointed at next relay, but hasn't reached it yet
         if (relayHitDistance < Vector3.Magnitude(relays[targetRelay].position - transform.position))
-=======
         //Only update if player and enemy are within camera boundaries 
         playerTransform = GameObject.FindGameObjectWithTag(PLAYER_TAG).transform;
         float distanceToPlayer = Vector2.Distance(playerTransform.position, transform.position);
         if (distanceToPlayer <= 13f)
->>>>>>> f35642e75ebf8ff87a7d219f66350996bc96e74e
         {
             //// Checks that enemy is pointed at next relay, but hasn't reached it yet
             //if (Vector3.Angle(transform.right, relays[targetRelay].position - transform.position) < 90 && relayHitDistance < Vector3.Magnitude(relays[targetRelay].position - transform.position))
