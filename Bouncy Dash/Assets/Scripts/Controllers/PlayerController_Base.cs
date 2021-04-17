@@ -104,4 +104,6 @@ public class PlayerController_Base : MonoBehaviour
 
     protected virtual bool IsGrounded() { return true; }
     protected virtual void ResetVelocity() { }
+
+    public float GetVerticalSpeed() { return m_currentVerticalSpeed; }
 }

@@ -30,7 +30,7 @@ public class WalkingEnemy : Enemy_Base
     void Update()
     {
         // Checks that enemy is pointed at next relay, but hasn't reached it yet
-        if (Vector3.Angle(transform.right, relays[targetRelay].position - transform.position) < 90 && relayHitDistance < Vector3.Magnitude(relays[targetRelay].position - transform.position))
+        if (relayHitDistance < Vector3.Magnitude(relays[targetRelay].position - transform.position))
         {
             transform.Translate(transform.right * speed * Time.deltaTime, Space.World);
         }

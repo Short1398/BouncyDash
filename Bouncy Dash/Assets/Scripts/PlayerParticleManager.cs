@@ -26,19 +26,21 @@ public class PlayerParticleManager : MonoBehaviour
                 contactSparks.transform.position = collision.GetContact(0).point;
                 contactSparks.Play();
             }
-            else if (player.GetCurrentControlType() == MergedPlayerController.PlayerControllers.DEFAULT && player.m_grounded)
+            else if (player.m_grounded && !dashDust.isPlaying)
             {
                 landingDust.Play();
-                //dashDust.Play();
+                dashDust.Play();
+                StartCoroutine("DashDust");
             }
         }
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    IEnumerator DashDust()
     {
-        if (0 < GetComponent<Rigidbody2D>().velocity.y)
+        if (!player.m_grounded)
         {
-            dashDust.Pause();
+            dashDust.Stop();
+            yield return null;
         }
     }
 }
