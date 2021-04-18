@@ -311,6 +311,11 @@ PrefabInstance:
       propertyPath: m_FillClockwise
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6716720857018357678, guid: 93dfb3b3de899c8478597359021f9219,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8159935531123902998, guid: 93dfb3b3de899c8478597359021f9219,
         type: 3}
       propertyPath: m_IsActive
