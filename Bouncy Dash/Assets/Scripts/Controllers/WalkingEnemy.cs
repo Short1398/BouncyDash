@@ -31,7 +31,7 @@ public class WalkingEnemy : Enemy_Base
 
         currentTarget = relays[waypointIndex].position;
 
-        speed *= Time.deltaTime;
+        //this.speed *= Time.deltaTime;
 
         // Sets enemy at first relay, pointed toward second
         //gameObject.transform.position = relays[0].position;
@@ -48,48 +48,50 @@ public class WalkingEnemy : Enemy_Base
         float distanceToPlayer = Vector2.Distance(playerTransform.position, transform.position);
         if (distanceToPlayer <= 13f)
         {
-            //// Checks that enemy is pointed at next relay, but hasn't reached it yet
-            //if (Vector3.Angle(transform.right, relays[targetRelay].position - transform.position) < 90 && relayHitDistance < Vector3.Magnitude(relays[targetRelay].position - transform.position))
-            //{
-            //    transform.Translate(transform.right * speed * Time.deltaTime, Space.World);
-            //}
-            //else
-            //{
-            //    // If enemy has reached or passed target relay, moves on to the next
-            //    if (targetRelay < relays.Count - 1)
-            //    {
-            //        targetRelay++;
-            //    }
-            //    else
-            //    {
-            //        targetRelay = 0;
-            //    }
-            //    transform.right = (Vector3.Normalize(relays[targetRelay].position - transform.position));
-            //}
-
-            //Nicks temp solution, just for optimization
-            float distanceToTarget = Vector2.Distance(currentTarget, transform.position);
-
-            if (distanceToTarget <= 2f)
+             //Checks that enemy is pointed at next relay, but hasn't reached it yet
+            if (Vector3.Angle(transform.right, relays[targetRelay].position - transform.position) < 90 && relayHitDistance < Vector3.Magnitude(relays[targetRelay].position - transform.position))
             {
-                int waypointLength = relays.Count - 1;
-                bool shouldFlip = (Vector3)currentTarget == relays[0].position || (Vector3)currentTarget == relays[waypointLength].position;
-                if (shouldFlip)
+                transform.Translate(transform.right * speed * Time.deltaTime, Space.World);
+            }
+            else
+            {
+                 //If enemy has reached or passed target relay, moves on to the next
+                if (targetRelay < relays.Count - 1)
                 {
-                    sr.flipX = sr.flipX ? false : true;
-
-                    waypointRate = -waypointRate;
+                    targetRelay++;
                 }
-
-                
-                waypointIndex += waypointRate; ;
-
-                waypointIndex = Mathf.Clamp(waypointIndex, 0, waypointLength);
-
-                currentTarget = relays[waypointIndex].position;
+                else
+                {
+                    targetRelay = 0;
+                }
+                transform.right = (Vector3.Normalize(relays[targetRelay].position - transform.position));
             }
 
-            transform.position = Vector2.MoveTowards(transform.position, currentTarget, speed);
+            //Nicks temp solution, just for optimization
+
+            //float distanceToTarget = Vector2.Distance(currentTarget, transform.position);
+
+
+            //if (distanceToTarget <= 2f)
+            //{
+            //    int waypointLength = relays.Count - 1;
+            //    bool shouldFlip = (Vector3)currentTarget == relays[0].position || (Vector3)currentTarget == relays[waypointLength].position;
+            //    if (shouldFlip)
+            //    {
+            //        sr.flipX = sr.flipX ? false : true;
+
+            //        waypointRate = -waypointRate;
+            //    }
+
+
+            //    waypointIndex += waypointRate; ;
+
+            //    waypointIndex = Mathf.Clamp(waypointIndex, 0, waypointLength);
+
+            //    currentTarget = relays[waypointIndex].position;
+            //}
+
+            //transform.position = Vector2.MoveTowards(transform.position, currentTarget, speed);
         }
         
     }
